@@ -3,3 +3,5 @@
 *.pyc
 *.vscode
 files
+out_VTM
+video_bin
