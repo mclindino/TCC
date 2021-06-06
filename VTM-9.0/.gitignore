@@ -53,9 +53,10 @@ deploy
 bin/
 build/
 cmake/CMakeBuild/bin/pyhhi/
-outputs/
+out_VTM/
 VTM-9.0-ML/
 myCFGs/
+video_bin/
 
 # Outros arquivos
 *.yuv
