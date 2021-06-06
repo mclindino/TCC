@@ -1,0 +1,65 @@
+dec.yuv
+rec.yuv
+str.bin
+/build/
+/bin/
+/lib/
+core
+deploy
+*.sdf
+*.suo
+.vs/
+.vscode/
+*.blg
+*.bbl
+*.pyc
+/out/
+/doc/_minted-software-manual/
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Criados apos build
+bin/
+build/
+cmake/CMakeBuild/bin/pyhhi/
+outputs/
+VTM-9.0-ML/
+myCFGs/
+
+# Outros arquivos
+*.yuv
+*.str
+*.csv
+*.txt
+*.bin
