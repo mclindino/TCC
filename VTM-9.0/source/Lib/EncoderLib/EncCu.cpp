@@ -876,8 +876,23 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
         
         #endif
 
+        #if DATASET_PIXEL
+          features::extractCUPixel(bestCS);
+        #endif
+
         xCheckModeSplit( tempCS, bestCS, partitioner, currTestMode, modeTypeParent, skipInterPass );
         
+        /*lindino*/
+        #if DATASET_EXTRACTION_TARGET
+          if (partitioner.chType == CHANNEL_TYPE_LUMA)
+          {
+            for(int i = 0; i < bestCS->cus.size(); i++)
+              features::extractTarget(bestCS, bestCS->cus[i], currTestMode);
+
+            //features::extract_target_partitioner(bestCS, &partitioner, encTestMode);
+          }
+        #endif
+
         //recover cons modes
         tempCS->modeType = partitioner.modeType = modeTypeParent;
         tempCS->treeType = partitioner.treeType = treeTypeParent;
@@ -1571,13 +1586,7 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   xCheckBestMode( tempCS, bestCS, partitioner, encTestMode );
 
   /*lindino*/
-  #if DATASET_EXTRACTION_TARGET
-    if (partitioner.chType == CHANNEL_TYPE_LUMA)
-    {
-      for(int i = 0; i < bestCS->cus.size(); i++)
-        features::extract_target(bestCS->cus[i], bestCS);
-    }
-  #endif
+
   
   if (isAffMVInfoSaved)
     m_pcInterSearch->addAffMVInfo(tmpMVInfo);

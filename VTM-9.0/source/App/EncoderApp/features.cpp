@@ -27,6 +27,9 @@ double   features::cachedResultRDCost;
 double   features::mergeRDCost;
 double   features::mergeGeoRDCost;
 double   features::intraRDCost;
+int      features::CTUPixel[128][128];
+int      features::pixelHeight;
+int      features::pixelWidth;
 
 features::features(string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight)
 { 
@@ -85,7 +88,7 @@ void features::createFile()
 
 
   file_target << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
-              << "CU_RDCost,CS_RDCost" << endl;
+              << "PartSplit,RDCost" << endl;
 }
 
 
@@ -166,26 +169,25 @@ void features::extract_features(CodingUnit* cu, CodingStructure* cs, EncTestMode
 
 }
 
-void features::extract_target(CodingUnit* cu, CodingStructure* cs)
+void features::extractTarget(CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode)
 {
-  file_target                           <<
-  videoName                             << "," <<
-  qp                                    << "," <<
-  frameWidth                            << "," <<        
-  frameHeight                           << "," <<         
-  int(cu->lwidth())                     << "," <<
-  int(cu->lheight())                    << "," <<
-  int(cu->Y().topLeft().x)              << "," <<
-  int(cu->Y().topLeft().y)              << "," << 
-  int(cu->Y().bottomRight().x)          << "," <<
-  int(cu->Y().bottomRight().y)          << "," <<
-  int(cs->picture->getPOC())            << "," <<
-  int(cu->qtDepth)                      << "," <<
-  int(cu->mtDepth)                      << "," <<
-  int(cu->cs->cost)                     << "," <<
-  int(cs->cost)                         << endl;
+  file_target                       <<
+  videoName                         << "," <<
+  qp                                << "," <<
+  frameWidth                        << "," <<        
+  frameHeight                       << "," <<         
+  int(cu->lwidth())                 << "," <<
+  int(cu->lheight())                << "," <<
+  int(cu->Y().topLeft().x)          << "," <<
+  int(cu->Y().topLeft().y)          << "," << 
+  int(cu->Y().bottomRight().x)      << "," <<
+  int(cu->Y().bottomRight().y)      << "," <<
+  int(cs->picture->getPOC())        << "," <<
+  int(cu->qtDepth)                  << "," <<
+  int(cu->mtDepth)                  << "," <<
+  int(getPartSplit(currTestMode))   << "," <<
+  int(cs->cost)                     << endl;
 }
-
 
 int*** features::initCTUFrame()
 {
@@ -360,3 +362,27 @@ void features::setIntraRDCost(double m_intra)
   intraRDCost = (intraRDCost > m_intra) ? m_intra : intraRDCost;
 }
 
+void features::extractCUPixel(CodingStructure* cs)
+{
+  int xTL = cs->area.Y().topLeft().x;
+  int yTL = cs->area.Y().topLeft().y;
+  int xBR = cs->area.Y().bottomRight().x;
+  int yBR = cs->area.Y().bottomRight().y;
+  
+  int height = 0;
+  int width = 0;
+
+  for(int y = yTL; y <= yBR; y++)
+  {
+    for(int x = xTL; x <= xBR; x++)
+    {
+      CTUPixel[height][width] = cs->picture->getTrueOrigBuf().Y().at(x,y);
+      width++;
+    }
+    height++;
+    width = 0;
+  }
+
+  pixelHeight  = yBR - yTL;
+  pixelWidth   = xBR - xTL;
+}

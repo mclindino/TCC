@@ -35,8 +35,8 @@ def main():
 
 		print(yellow + 'Codificando o video ' + args.videoname + ' QP ' + q + reset)
 		os.system(exe)
-		os.system('mv dataset_' + args.videoname + '_' + q + '_features.csv ../Software/files/dataset_' + args.videoname + '_' + q + '_features.csv')
-		os.system('mv dataset_' + args.videoname + '_' + q + '_target.csv ../Software/files/dataset_' + args.videoname + '_' + q + '_target.csv')
+		os.system('mv dataset_' + args.videoname + '_' + q + '_features.csv ../Software/files/dataset_' + args.videoname + '_' + q + '_features_' + args.fileOut + '.csv')
+		os.system('mv dataset_' + args.videoname + '_' + q + '_target.csv ../Software/files/dataset_' + args.videoname + '_' + q + '_target_' + args.fileOut + '.csv')
 	print(green + 'Done Simulation' + reset)
 	return 0
 

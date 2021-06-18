@@ -9,8 +9,9 @@
 
 using namespace std;
 
-#define DATASET_EXTRACTION_FEATURES 1
-#define DATASET_EXTRACTION_TARGET 1
+#define DATASET_EXTRACTION_FEATURES 0
+#define DATASET_EXTRACTION_TARGET 0
+#define DATASET_PIXEL 1
 
 enum DepthCTUFrame
 {
@@ -62,6 +63,12 @@ private:
     static double  mergeRDCost;
     static double  mergeGeoRDCost;
     static double  intraRDCost;
+
+    /* Auxiliar Variables for Pixel Features */
+    static int CTUPixel[128][128];
+    static int pixelHeight;
+    static int pixelWidth;
+
 public:
 
     features                                (string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight);
@@ -80,5 +87,6 @@ public:
     static void    setMergeRDCost           (double m_merge);
     static void    setMergeGeoRDCost        (double m_geo);
     static void    setIntraRDCost           (double m_intra);
-    static void    extract_target           (CodingUnit* cu, CodingStructure* cs);
+    static void    extractTarget            (CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode);
+    static void    extractCUPixel           (CodingStructure* cs);
 };
