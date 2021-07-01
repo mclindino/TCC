@@ -27,9 +27,10 @@ double   features::cachedResultRDCost;
 double   features::mergeRDCost;
 double   features::mergeGeoRDCost;
 double   features::intraRDCost;
-int      features::CTUPixel[128][128];
+unsigned short  features::CTUPixel[128][128];
 int      features::pixelHeight;
 int      features::pixelWidth;
+int      features::sum;
 
 features::features(string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight)
 { 
@@ -371,12 +372,14 @@ void features::extractCUPixel(CodingStructure* cs)
   
   int height = 0;
   int width = 0;
+  sum = 0;
 
   for(int y = yTL; y <= yBR; y++)
   {
     for(int x = xTL; x <= xBR; x++)
     {
       CTUPixel[height][width] = cs->picture->getTrueOrigBuf().Y().at(x,y);
+      sum += CTUPixel[height][width];
       width++;
     }
     height++;
@@ -385,4 +388,57 @@ void features::extractCUPixel(CodingStructure* cs)
 
   pixelHeight  = yBR - yTL;
   pixelWidth   = xBR - xTL;
+
+  double var = variance();
+  int n = ((pixelHeight+1) * (pixelWidth+1));
+  double mean = (double) sum / (double) n;
+
+  /*cout << "(" << xTL << "," << yTL << ") (" << xBR << "," << yBR << ") H:" << pixelHeight << " W:" << pixelWidth << endl;
+  cout << "\t Sum: " << sum << " Variance: " << var << endl;
+  for(int y = 0; y <= pixelHeight; y++)
+  {
+    for(int x = 0; x <= pixelWidth; x++)
+    {
+      cout << CTUPixel[y][x] << ",";
+    }
+    cout << endl;
+  }
+  cout << endl; */
+}
+
+double features::variance()
+{
+  double var = 0;
+  int n = ((pixelHeight+1) * (pixelWidth+1));
+  double mean = (double) sum / (double) n;
+  for(int i = 0; i <= pixelHeight; i++)
+  {
+    for(int j = 0; j <= pixelWidth; j++)
+    {
+      var += (CTUPixel[i][j] - mean) * (CTUPixel[i][j] - mean);
+    }
+  }
+  return var / (double) n;
+}
+
+double features::gradients()
+{
+  double sobel_X[3][3] = 
+          { {-1, 0, 1},
+            {-2, 0, 2},
+            {-1, 0, 1} };
+  
+  double sobel_Y[3][3] =
+          { {-1, -2, -1},
+            {0, 0, 0},
+            {1, 2, 1} };
+  double Dx[3][3];
+  
+  for(int i = 1; i < pixelHeight; i++)
+  {
+    for(int j = 1; j < pixelWidth; j++)
+    {
+      
+    }
+  }
 }

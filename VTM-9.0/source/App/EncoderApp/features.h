@@ -65,9 +65,10 @@ private:
     static double  intraRDCost;
 
     /* Auxiliar Variables for Pixel Features */
-    static int CTUPixel[128][128];
+    static unsigned short CTUPixel[128][128];
     static int pixelHeight;
     static int pixelWidth;
+    static int sum;
 
 public:
 
@@ -89,4 +90,6 @@ public:
     static void    setIntraRDCost           (double m_intra);
     static void    extractTarget            (CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode);
     static void    extractCUPixel           (CodingStructure* cs);
+    static double  variance                 ();
+    static double  gradients                ();
 };
