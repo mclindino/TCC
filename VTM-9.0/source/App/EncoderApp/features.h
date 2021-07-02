@@ -89,7 +89,8 @@ public:
     static void    setMergeGeoRDCost        (double m_geo);
     static void    setIntraRDCost           (double m_intra);
     static void    extractTarget            (CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode);
-    static void    extractCUPixel           (CodingStructure* cs);
+    static void    extractCUPixel           (CodingStructure* cs, PartSplit split);
     static double  variance                 ();
-    static double  gradients                ();
+    static vector<double>  gradients        ();
+    static vector<double>  quarterCU        (PartSplit split);
 };

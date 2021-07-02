@@ -876,10 +876,6 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
         
         #endif
 
-        #if DATASET_PIXEL
-          features::extractCUPixel(bestCS);
-        #endif
-
         xCheckModeSplit( tempCS, bestCS, partitioner, currTestMode, modeTypeParent, skipInterPass );
         
         /*lindino*/
@@ -1248,6 +1244,12 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   const auto oldPLT           = tempCS->prevPLT;
 
   const PartSplit split = getPartSplit( encTestMode );
+  
+  #if DATASET_PIXEL
+    features::extractCUPixel(bestCS, split);
+  #endif
+
+
   const ModeType modeTypeChild = partitioner.modeType;
 
   CHECK( split == CU_DONT_SPLIT, "No proper split provided!" );
