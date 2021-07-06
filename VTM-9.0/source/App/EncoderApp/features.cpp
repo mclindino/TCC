@@ -450,6 +450,7 @@ vector<double> features::gradients()
             {1, 2, 1} };
   double Dx, Dy = 0;
 
+  // dividir 8
   for(int i = 1; i < pixelHeight; i++)
   {
     for(int j = 1; j < pixelWidth; j++)
@@ -477,8 +478,8 @@ vector<double> features::gradients()
   }
 
   vector<double> grads;
-  grads.push_back(Dx);
-  grads.push_back(Dy);
+  grads.push_back(Dx/8);
+  grads.push_back(Dy/8);
   
   return grads;
 }
