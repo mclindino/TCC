@@ -80,13 +80,15 @@ void features::createFile()
   file_features.open("dataset_" + videoName + "_" + to_string(qp) + "_features.csv", ios::app);
   file_target.open("dataset_" + videoName + "_" + to_string(qp) + "_target.csv", ios::app);
 
-  file_features << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,"
+  /*file_features << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,"
                 << "depth,qtdepth,mtdepth,qp,predMode,skip,mmvdSkip,affine,affineType,colorTransform,geoFlag,bdpcmMode,"
                 << "bdpcmModeChroma,imv,rootCbf,mipFlag,modeType,modeTypeSeries,splitSeries,cost,dist,fracBits,baseQP,prevQP,"
                 << "currQP,lumaCost,POC,opts,maxCostAllowed,tlMaxQTDepth,tMaxQTDepth,trMaxQTDepth,lMaxQTDepth,previousMaxQTDepth,averageQTDepth,modeQTDepth,highestQTDepth,"
                 << "tlMaxMTDepth,tMaxMTDepth,trMaxMTDepth,lMaxMDepth,previousMaxMTDepth,averageMTDepth,modeMTDepth,highestMTDepth,interIMVRDCost,"
-                << "interRDCost,affineMergeRDCost,cachedResultRDCost,mergeRDCost,mergeGeoRDCost,intraRDCost,splitType" << endl;
-
+                << "interRDCost,affineMergeRDCost,cachedResultRDCost,mergeRDCost,mergeGeoRDCost,intraRDCost,splitType" << endl; */
+  
+  file_features << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
+                << "PartSplit,cost" << endl;
 
   file_target << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
               << "PartSplit,RDCost" << endl;
@@ -95,6 +97,14 @@ void features::createFile()
 
 void features::extract_features(CodingUnit* cu, CodingStructure* cs, EncTestMode currTestMode)
 {
+  interIMVRDCost                        = (interIMVRDCost     == MAX_DOUBLE)    ? -1 : interIMVRDCost;
+  interRDCost                           = (interRDCost        == MAX_DOUBLE)    ? -1 : interRDCost;
+  affineMergeRDCost                     = (affineMergeRDCost  == MAX_DOUBLE)    ? -1 : affineMergeRDCost;
+  cachedResultRDCost                    = (cachedResultRDCost == MAX_DOUBLE)    ? -1 : cachedResultRDCost;
+  mergeRDCost                           = (mergeRDCost        == MAX_DOUBLE)    ? -1 : mergeRDCost;
+  mergeGeoRDCost                        = (mergeGeoRDCost     == MAX_DOUBLE)    ? -1 : mergeGeoRDCost;
+  intraRDCost                           = (intraRDCost        == MAX_DOUBLE)    ? -1 : intraRDCost;
+
   file_features                         <<
   videoName                             << "," <<
   qp                                    << "," <<
@@ -170,24 +180,47 @@ void features::extract_features(CodingUnit* cu, CodingStructure* cs, EncTestMode
 
 }
 
-void features::extractTarget(CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode)
+void features::extractTarget(CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode, bool before)
 {
-  file_target                       <<
-  videoName                         << "," <<
-  qp                                << "," <<
-  frameWidth                        << "," <<        
-  frameHeight                       << "," <<         
-  int(cu->lwidth())                 << "," <<
-  int(cu->lheight())                << "," <<
-  int(cu->Y().topLeft().x)          << "," <<
-  int(cu->Y().topLeft().y)          << "," << 
-  int(cu->Y().bottomRight().x)      << "," <<
-  int(cu->Y().bottomRight().y)      << "," <<
-  int(cs->picture->getPOC())        << "," <<
-  int(cu->qtDepth)                  << "," <<
-  int(cu->mtDepth)                  << "," <<
-  int(getPartSplit(currTestMode))   << "," <<
-  int(cs->cost)                     << endl;
+  if (before)
+  {
+    file_features                     <<
+    videoName                         << "," <<
+    qp                                << "," <<
+    frameWidth                        << "," <<        
+    frameHeight                       << "," <<         
+    int(cu->lwidth())                 << "," <<
+    int(cu->lheight())                << "," <<
+    int(cu->Y().topLeft().x)          << "," <<
+    int(cu->Y().topLeft().y)          << "," << 
+    int(cu->Y().bottomRight().x)      << "," <<
+    int(cu->Y().bottomRight().y)      << "," <<
+    int(cs->picture->getPOC())        << "," <<
+    int(cu->qtDepth)                  << "," <<
+    int(cu->mtDepth)                  << "," <<
+    int(getPartSplit(currTestMode))   << "," <<
+    int(cs->cost)                     << endl;
+  }
+
+  else
+  {
+    file_target                       <<
+    videoName                         << "," <<
+    qp                                << "," <<
+    frameWidth                        << "," <<        
+    frameHeight                       << "," <<         
+    int(cu->lwidth())                 << "," <<
+    int(cu->lheight())                << "," <<
+    int(cu->Y().topLeft().x)          << "," <<
+    int(cu->Y().topLeft().y)          << "," << 
+    int(cu->Y().bottomRight().x)      << "," <<
+    int(cu->Y().bottomRight().y)      << "," <<
+    int(cs->picture->getPOC())        << "," <<
+    int(cu->qtDepth)                  << "," <<
+    int(cu->mtDepth)                  << "," <<
+    int(getPartSplit(currTestMode))   << "," <<
+    int(cs->cost)                     << endl;
+  }
 }
 
 int*** features::initCTUFrame()

@@ -871,7 +871,8 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           if (partitioner.chType == CHANNEL_TYPE_LUMA)
           {
             for(int i = 0; i < bestCS->cus.size(); i++)
-              features::extract_features(bestCS->cus[i], bestCS, currTestMode);
+              //features::extract_features(bestCS->cus[i], bestCS, currTestMode);
+              features::extractTarget(bestCS, bestCS->cus[i], currTestMode, true);
           }
         
         #endif
@@ -883,7 +884,7 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           if (partitioner.chType == CHANNEL_TYPE_LUMA)
           {
             for(int i = 0; i < bestCS->cus.size(); i++)
-              features::extractTarget(bestCS, bestCS->cus[i], currTestMode);
+              features::extractTarget(bestCS, bestCS->cus[i], currTestMode, false);
 
             //features::extract_target_partitioner(bestCS, &partitioner, encTestMode);
           }
@@ -1245,6 +1246,7 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
 
   const PartSplit split = getPartSplit( encTestMode );
   
+  //Lindino
   #if DATASET_PIXEL
     features::extractCUPixel(bestCS, split);
   #endif

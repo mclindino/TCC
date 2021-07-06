@@ -11,6 +11,7 @@ def main():
 	parser.add_argument('--videoname', '-v', help='Nome do video')
 	parser.add_argument('--binary', '-b', help='Nome da pasta com os binstreams', default='video_bin/')
 	parser.add_argument('--qp', help='Parametro de Quantizacao', default='22')
+	parser.add_argument('--file, -f', help='Arquivo', default='Teste')
 
 	args = parser.parse_args()
 	
@@ -22,7 +23,7 @@ def main():
 	print(yellow + 'Compilando o codigo...' + reset)
 	os.system('./make.sh')
 
-	csv_names = args.videoname + '_' + args.qp + '_Teste'
+	csv_names = args.videoname + '_' + args.qp + '_Sem'
 	print('Decodificando video ' + yellow + args.videoname + reset + ' QP ' + yellow + args.qp + reset)
 	decoder = './bin/DecoderAppStaticd -b ' + args.binary + csv_names + '.bin -o ' + args.videoname + '.yuv'
 	

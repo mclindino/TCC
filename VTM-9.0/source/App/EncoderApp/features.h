@@ -9,9 +9,9 @@
 
 using namespace std;
 
-#define DATASET_EXTRACTION_FEATURES 0
-#define DATASET_EXTRACTION_TARGET 0
-#define DATASET_PIXEL 1
+#define DATASET_EXTRACTION_FEATURES 1
+#define DATASET_EXTRACTION_TARGET 1
+#define DATASET_PIXEL 0
 
 enum DepthCTUFrame
 {
@@ -88,7 +88,7 @@ public:
     static void    setMergeRDCost           (double m_merge);
     static void    setMergeGeoRDCost        (double m_geo);
     static void    setIntraRDCost           (double m_intra);
-    static void    extractTarget            (CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode);
+    static void    extractTarget            (CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode, bool before);
     static void    extractCUPixel           (CodingStructure* cs, PartSplit split);
     static double  variance                 ();
     static vector<double>  gradients        ();

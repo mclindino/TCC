@@ -126,7 +126,7 @@ void DecCu::decompressCtu( CodingStructure& cs, const UnitArea& ctuArea )
       if (currCU.chType == CHANNEL_TYPE_LUMA) 
       {
         ofstream file;
-        file.open("visualizar.csv", ios::app);
+        file.open("paint.csv", ios::app);
         file << cs.area.Y().height << "," << cs.area.Y().width << "," 
              << currCU.Y().topLeft().x << "," << currCU.Y().topLeft().y << ","
              << currCU.Y().bottomRight().x << "," << currCU.Y().bottomRight().y << ","

@@ -31,7 +31,9 @@ def main():
 
 	for q in qps:
 
-		exe = 'taskset -c ' + args.thread + ' ./bin/EncoderAppStaticd -c cfg/encoder_randomaccess_vtm.cfg -c cfg/per-sequence/' + args.videoname + '.cfg --VideoName=' + args.videoname  + ' --FramesToBeEncoded=' + args.frames + '--SIMD=SCALAR --BitstreamFile=' + args.binary + args.videoname + "_" + q + "_" + args.fileOut + '.bin --QP=' + q + " > " + args.tsResults + args.videoname + "_" + q + "_" + args.fileOut + ".txt"
+		exe = 'taskset -c ' + args.thread + ' ./bin/EncoderAppStaticd -c cfg/encoder_randomaccess_vtm.cfg -c cfg/per-sequence/' + args.videoname + '.cfg --VideoName=' + args.videoname  + \
+			  ' --FramesToBeEncoded=' + args.frames + '--SIMD=SCALAR --MaxMTTHierarchyDepth=0 --BitstreamFile=' + args.binary + args.videoname + "_" + q + "_" + args.fileOut + '.bin --QP=' + q + \
+			  " > " + args.tsResults + args.videoname + "_" + q + "_" + args.fileOut + ".txt"
 
 		print(yellow + 'Codificando o video ' + args.videoname + ' QP ' + q + reset)
 		os.system(exe)
