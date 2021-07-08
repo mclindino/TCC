@@ -9,9 +9,9 @@
 
 using namespace std;
 
-#define DATASET_EXTRACTION_FEATURES 1
-#define DATASET_EXTRACTION_TARGET 1
-#define DATASET_PIXEL 0
+#define DATASET_EXTRACTION_FEATURES 0
+#define DATASET_EXTRACTION_TARGET 0
+#define DATASET_PIXEL 1
 
 enum DepthCTUFrame
 {
@@ -66,31 +66,28 @@ private:
 
     /* Auxiliar Variables for Pixel Features */
     static unsigned short CTUPixel[128][128];
-    static int pixelHeight;
-    static int pixelWidth;
-    static int sum;
 
 public:
 
-    features                                (string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight);
-    static void    createFile               ();
-    static void    extract_features         (CodingUnit* cu, CodingStructure* cs, EncTestMode currTestMode);
-    static void    ctuDepth                 (CodingStructure* cs);
-    static int***  initCTUFrame             ();
-    static void    updateCTUFrame           ();
-    static void    neighbors                ();
-    static int     checkAverage             (vector<int> depths);
-    static int     checkMode                (vector<int> depths);
-    static void    setInterIMVRDCost        (double m_interIMV);
-    static void    setInterRDCost           (double m_inter);
-    static void    setAffineMergeRDCost     (double m_affine);
-    static void    setCachedResultRDCost    (double m_cached);
-    static void    setMergeRDCost           (double m_merge);
-    static void    setMergeGeoRDCost        (double m_geo);
-    static void    setIntraRDCost           (double m_intra);
-    static void    extractTarget            (CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode, bool before);
-    static void    extractCUPixel           (CodingStructure* cs, PartSplit split);
-    static double  variance                 ();
-    static vector<double>  gradients        ();
-    static vector<double>  quarterCU        (PartSplit split);
+    features                                        (string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight);
+    static void    createFile                       ();
+    static void    extract_features                 (CodingUnit* cu, CodingStructure* cs, EncTestMode currTestMode);
+    static void    ctuDepth                         (CodingStructure* cs);
+    static int***  initCTUFrame                     ();
+    static void    updateCTUFrame                   ();
+    static void    neighbors                        ();
+    static int     checkAverage                     (vector<int> depths);
+    static int     checkMode                        (vector<int> depths);
+    static void    setInterIMVRDCost                (double m_interIMV);
+    static void    setInterRDCost                   (double m_inter);
+    static void    setAffineMergeRDCost             (double m_affine);
+    static void    setCachedResultRDCost            (double m_cached);
+    static void    setMergeRDCost                   (double m_merge);
+    static void    setMergeGeoRDCost                (double m_geo);
+    static void    setIntraRDCost                   (double m_intra);
+    static void    extractTarget                    (CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode, bool before);
+    static void    extractCUPixel                   (CodingStructure* cs, PartSplit split);
+    static double  variance                         (int xTL, int yTL, int xBR, int yBR, int varSum);
+    static vector<unsigned short>  gradients        (int xTL, int yTL, int xBR, int yBR);
+    static vector<double>  quarterCU                (int xTL, int yTL, int xBR, int yBR, PartSplit split);
 };

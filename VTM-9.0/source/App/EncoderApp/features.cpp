@@ -28,9 +28,6 @@ double   features::mergeRDCost;
 double   features::mergeGeoRDCost;
 double   features::intraRDCost;
 unsigned short  features::CTUPixel[128][128];
-int      features::pixelHeight;
-int      features::pixelWidth;
-int      features::sum;
 
 features::features(string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight)
 { 
@@ -405,7 +402,9 @@ void features::extractCUPixel(CodingStructure* cs, PartSplit split)
   
   int height = 0;
   int width = 0;
-  sum = 0;
+  int sum = 0;
+  int pixelHeight = yBR - yTL + 1;
+  int pixelWidth = xBR - xTL + 1;
 
   for(int y = yTL; y <= yBR; y++)
   {
@@ -419,49 +418,49 @@ void features::extractCUPixel(CodingStructure* cs, PartSplit split)
     width = 0;
   }
 
-  pixelHeight  = yBR - yTL;
-  pixelWidth   = xBR - xTL;
-
-  double var = variance();
-  int n = ((pixelHeight+1) * (pixelWidth+1));
+  double var = variance(xTL, yTL, xBR, yBR, sum);
+  int n = (pixelHeight * pixelWidth);
   double mean = (double) sum / (double) n;
-  vector<double> grads = gradients();
-  double ratioGrads = grads[0] / grads[1];
-  vector<double> quarters = quarterCU(split);
+  vector<unsigned short> grads = gradients(xTL, yTL, xBR, yBR);
+  double ratioGrads = (double) grads[0] / (double) grads[1];
+  vector<double> quarters = quarterCU(xTL, yTL, xBR, yBR, split);
 
   cout << "(" << xTL << "," << yTL << ") (" << xBR << "," << yBR << ") H:" << pixelHeight << " W:" << pixelWidth << endl;
-  cout << "\tSum: " << sum << "\tVariance: " << var << "\tMean: " << mean << "\tGrad(X): " << grads[0] << "\tGrads(Y): " << grads[1] << "\tRadioGrad: " << ratioGrads << endl;
+  cout << "\tVariance: " << var << "\tMean: " << mean << "\tGrad(X): " << grads[0] << "\tGrads(Y): " << grads[1] << "\tRadioGrad: " << ratioGrads << endl;
   
   if(split == CU_QUAD_SPLIT)
   {
-    cout << "\tsubQuarterTL: (" << quarters[0] << "," << quarters[1] << ") " 
-         << "\tsubQuarterTR: (" << quarters[2] << "," << quarters[3] << ") "
-         << "\tsubQuarterBL: (" << quarters[4] << "," << quarters[5] << ") " 
-         << "\tsubQuarterBR: (" << quarters[6] << "," << quarters[7] << ") " << endl;
-  }
+    cout << "\tsubQuarterTL: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
+        << "\n\tsubQuarterTR: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9]
+        << "\n\tsubQuarterBL: Var: " << quarters[10] << " Mean: " << quarters[11] << " GradX: " << quarters[12] << " GradY: " << quarters[13] << " RatioGrad: " << quarters[14]
+        << "\n\tsubQuarterBR: Var: " << quarters[15] << " Mean: " << quarters[16] << " GradX: " << quarters[17] << " GradY: " << quarters[18] << " RatioGrad: " << quarters[19] << endl;
+  } 
 
   else if(split == CU_HORZ_SPLIT)
   {
-    cout << "\tsubQuarterT: (" << quarters[0] << "," << quarters[1] << ") " 
-         << "\tsubQuarterB: (" << quarters[2] << "," << quarters[3] << ") " << endl;
+    cout << "\tsubQuarterT: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
+        << "\n\tsubQuarterB: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9] << endl;
   }
   
   else if(split == CU_VERT_SPLIT)
   {
-    cout << "\tsubQuarterL: (" << quarters[0] << "," << quarters[1] << ") " 
-         << "\tsubQuarterR: (" << quarters[2] << "," << quarters[3] << ") " << endl;
+    cout << "\tsubQuarterR: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
+        << "\n\tsubQuarterL: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9] << endl;
   }
 }
 
-double features::variance()
+double features::variance(int xTL, int yTL, int xBR, int yBR, int varSum)
 {
   double var = 0;
-  int n = ((pixelHeight+1) * (pixelWidth+1));
-  double mean = (double) sum / (double) n;
+  int varHeight  = yBR - yTL + 1;
+  int varWidth   = xBR - xTL + 1;
+
+  int n = (varHeight * varWidth);
+  double mean = (double) varSum / (double) n;
   
-  for(int i = 0; i <= pixelHeight; i++)
+  for(int i = yTL; i <= yBR; i++)
   {
-    for(int j = 0; j <= pixelWidth; j++)
+    for(int j = xTL; j <= xBR; j++)
     {
       var += (CTUPixel[i][j] - mean) * (CTUPixel[i][j] - mean);
     }
@@ -470,131 +469,222 @@ double features::variance()
   return var / (double) n;
 }
 
-vector<double> features::gradients()
+vector<unsigned short > features::gradients(int xTL, int yTL, int xBR, int yBR)
 {
-  double sobel_X[3][3] = 
-          { {-1, 0, 1},
-            {-2, 0, 2},
-            {-1, 0, 1} };
-  
-  double sobel_Y[3][3] =
-          { {-1, -2, -1},
-            {0, 0, 0},
-            {1, 2, 1} };
-  double Dx, Dy = 0;
+  double sobelX[3][3] = 
+	{
+		{-1, 0, 1},
+		{-2, 0, 2},
+		{-1, 0, 1}
+	};
 
-  // dividir 8
-  for(int i = 1; i < pixelHeight; i++)
+	double sobelY[3][3] = 
+	{
+		{-1, -2, -1},
+		{0, 0, 0},
+		{1, 2, 1}
+	};
+
+	unsigned short GX = 0;
+	unsigned short GY = 0;
+
+  int gradHeight  = yBR - yTL + 1;
+  int gradWidth   = xBR - xTL + 1;
+
+	//PADDING
+	int heightPadding = gradHeight + 2;
+	int widthPadding  = gradWidth + 2;
+	unsigned short paddingImage[heightPadding][widthPadding] = {0};
+
+
+	for(int i = yTL; i <= yBR; i++)
+	{
+		for(int j = xTL; j <= xBR; j++)
+		{
+			paddingImage[i+1-yTL][j+1-xTL] = CTUPixel[i][j];
+			paddingImage[0][j+1-xTL] = CTUPixel[yTL][j];
+			paddingImage[heightPadding - 1][j+1-xTL] = CTUPixel[yBR][j];
+		}
+
+		paddingImage[i+1-yTL][0] = CTUPixel[i][xTL];
+		paddingImage[i+1-yTL][widthPadding - 1] = CTUPixel[i][xBR];
+	}
+
+	paddingImage[0][0] = CTUPixel[yTL][xTL];
+	paddingImage[heightPadding - 1][0] = CTUPixel[yBR][xTL];
+	paddingImage[0][widthPadding - 1] = CTUPixel[yTL][xBR];
+	paddingImage[heightPadding - 1][widthPadding - 1] = CTUPixel[yBR][xBR];
+
+  for(int i = 1; i < heightPadding - 1; i++)
   {
-    for(int j = 1; j < pixelWidth; j++)
+    for(int j = 1; j < widthPadding - 1; j++)
     {
-      Dx += (sobel_X[0][0] * CTUPixel[i-1][j-1])
-         +  (sobel_X[0][1] * CTUPixel[i-1][j])
-         +  (sobel_X[0][2] * CTUPixel[i-1][j+1])
-         +  (sobel_X[1][0] * CTUPixel[i][j-1])
-         +  (sobel_X[1][1] * CTUPixel[i][j])
-         +  (sobel_X[1][2] * CTUPixel[i][j+1])
-         +  (sobel_X[2][0] * CTUPixel[i+1][j-1])
-         +  (sobel_X[2][1] * CTUPixel[i+1][j])
-         +  (sobel_X[2][2] * CTUPixel[i+1][j+1]);
+      GX += (sobelX[0][0] * paddingImage[i-1][j-1])
+          + (sobelX[0][1] * paddingImage[i-1][j])
+          + (sobelX[0][2] * paddingImage[i-1][j+1])
+          + (sobelX[1][0] * paddingImage[i][j-1])
+          + (sobelX[1][1] * paddingImage[i][j])
+          + (sobelX[1][2] * paddingImage[i][j+1])
+          + (sobelX[2][0] * paddingImage[i+1][j-1])
+          + (sobelX[2][1] * paddingImage[i+1][j])
+          + (sobelX[2][2] * paddingImage[i+1][j+1]);
 
-      Dy += (sobel_Y[0][0] * CTUPixel[i-1][j-1])
-         +  (sobel_Y[0][1] * CTUPixel[i-1][j])
-         +  (sobel_Y[0][2] * CTUPixel[i-1][j+1])
-         +  (sobel_Y[1][0] * CTUPixel[i][j-1])
-         +  (sobel_Y[1][1] * CTUPixel[i][j])
-         +  (sobel_Y[1][2] * CTUPixel[i][j+1])
-         +  (sobel_Y[2][0] * CTUPixel[i+1][j-1])
-         +  (sobel_Y[2][1] * CTUPixel[i+1][j])
-         +  (sobel_Y[2][2] * CTUPixel[i+1][j+1]);
+      GY += (sobelY[0][0] * paddingImage[i-1][j-1])
+          + (sobelY[0][1] * paddingImage[i-1][j])
+          + (sobelY[0][2] * paddingImage[i-1][j+1])
+          + (sobelY[1][0] * paddingImage[i][j-1])
+          + (sobelY[1][1] * paddingImage[i][j])
+          + (sobelY[1][2] * paddingImage[i][j+1])
+          + (sobelY[2][0] * paddingImage[i+1][j-1])
+          + (sobelY[2][1] * paddingImage[i+1][j])
+          + (sobelY[2][2] * paddingImage[i+1][j+1]);
     }
   }
+  vector <unsigned short> grads;
+  grads.push_back(GX);
+  grads.push_back(GY);
 
-  vector<double> grads;
-  grads.push_back(Dx/8);
-  grads.push_back(Dy/8);
-  
   return grads;
 }
 
-vector<double> features::quarterCU(PartSplit split)
+vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit split)
 {
-  int quarterHeight = (pixelHeight + 1);
-  int quarterWidth  = (pixelWidth + 1);
-  int blocks = 0;
-  int xTL = 0;
-  int yTL = 0;
-  int xBR = quarterWidth - 1;
-  int yBR = quarterHeight - 1;
-
   vector<double> quarters;
 
-  // quarter[0] -> subVarTL     quarter[1] -> subMeanTL
-  // quarter[2] -> subVarTR     quarter[3] -> subMeanTR
-  // quarter[4] -> subVarBR     quarter[5] -> subMeanBR
-  // quarter[6] -> subVarBL     quarter[7] -> subMeanBL
   if(split == CU_QUAD_SPLIT)
   {
-    quarterHeight /= 2;
-    quarterWidth  /= 2;
-    blocks = 4;
-    xBR = quarterWidth - 1;
-    yBR = quarterHeight - 1;
-  }
+    int maxHeight = (yBR - yTL + 1);
+    int maxWidth  = (xBR - xTL + 1);
+    int quarterHeight = maxHeight / 2;
+    int quarterWidth  = maxWidth / 2;
+    int quarter_xTL = xTL;
+    int quarter_yTL = yTL;
+    int quarter_xBR = xBR - quarterWidth;
+    int quarter_yBR = yBR - quarterHeight;
+    int block = 4;
 
-  // quarter[0] -> subVarTL     quarter[1] -> subMeanTL
-  // quarter[2] -> subVarTR     quarter[3] -> subMeanTR
+    while(block != 0)
+    {
+      cout << "(" << quarter_xTL << "," << quarter_yTL << ") (" << quarter_xBR << "," << quarter_yBR << ")" << endl;
+      int quarterSum = 0;
+      for(int i = quarter_yTL; i <= quarter_yBR; i++)
+      {
+        for(int j = quarter_xTL; j <= quarter_xBR; j++)
+        {
+          quarterSum += CTUPixel[i][j];
+        }
+      }
+      
+      double quarterVar = variance(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR, quarterSum);
+      int n = (quarterHeight * quarterWidth);
+      double mean = (double) quarterSum / (double) n;
+      vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
+      double ratioGrads = (double) grads[0] / (double) grads[1];
+
+      quarter_xBR += quarterWidth;
+      quarter_xTL += quarterWidth;
+
+      if (quarter_xBR > maxWidth)
+      {
+        quarter_xBR = quarterWidth - 1;
+        quarter_xTL = 0;
+        quarter_yTL += quarterHeight;
+        quarter_yBR += quarterHeight;
+      }
+
+      block--;
+
+      quarters.push_back(quarterVar);
+      quarters.push_back(mean);
+      quarters.push_back(grads[0]);
+      quarters.push_back(grads[1]);
+      quarters.push_back(ratioGrads);
+    }
+  }
   else if(split == CU_HORZ_SPLIT)
   {
-    quarterHeight /= 2;
-    blocks = 2;
-    yBR = quarterHeight - 1;
+    int maxHeight = (yBR - yTL + 1);
+    int maxWidth  = (xBR - xTL + 1);
+    int quarterHeight = maxHeight / 2;
+    int quarterWidth  = maxWidth;
+    int quarter_xTL = xTL;
+    int quarter_yTL = yTL;
+    int quarter_xBR = xBR;
+    int quarter_yBR = yBR - quarterHeight;
+    int block = 2;
+
+    while(block != 0)
+    {
+      cout << "(" << quarter_xTL << "," << quarter_yTL << ") (" << quarter_xBR << "," << quarter_yBR << ")" << endl;
+      int quarterSum = 0;
+      for(int i = quarter_yTL; i <= quarter_yBR; i++)
+      {
+        for(int j = quarter_xTL; j <= quarter_xBR; j++)
+        {
+          quarterSum += CTUPixel[i][j];
+        }
+      }
+      
+      double quarterVar = variance(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR, quarterSum);
+      int n = (quarterHeight * quarterWidth);
+      double mean = (double) quarterSum / (double) n;
+      vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
+      double ratioGrads = (double) grads[0] / (double) grads[1];
+
+      quarter_yTL += quarterHeight;
+      quarter_yBR += quarterHeight;
+
+      block--;
+
+      quarters.push_back(quarterVar);
+      quarters.push_back(mean);
+      quarters.push_back(grads[0]);
+      quarters.push_back(grads[1]);
+      quarters.push_back(ratioGrads);
+    }
   }
 
   else if(split == CU_VERT_SPLIT)
   {
-    quarterWidth /= 2;
-    blocks = 2;
-    xBR = quarterWidth - 1;
-  }
+    int maxHeight = (yBR - yTL + 1);
+    int maxWidth  = (xBR - xTL + 1);
+    int quarterHeight = maxHeight;
+    int quarterWidth  = maxWidth / 2;
+    int quarter_xTL = xTL;
+    int quarter_yTL = yTL;
+    int quarter_xBR = xBR - quarterWidth;
+    int quarter_yBR = yBR;
+    int block = 2;
 
-  //if(split == CU_TRIH_SPLIT) quarterHeight /= 3;
-  //if(split == CU_TRIV_SPLIT) quarterWidth  /= 3;
-
-  while (blocks != 0)
-  {
-    cout << xTL << "," << yTL << "  " << xBR << "," << yBR << endl;
-
-    for(int i = yTL; i <= yBR; i++)
+    while(block != 0)
     {
-      for(int j = xTL; j <= xTL; j++)
+      cout << "(" << quarter_xTL << "," << quarter_yTL << ") (" << quarter_xBR << "," << quarter_yBR << ")" << endl;
+      int quarterSum = 0;
+      for(int i = quarter_yTL; i <= quarter_yBR; i++)
       {
-        sum += CTUPixel[i][j];
+        for(int j = quarter_xTL; j <= quarter_xBR; j++)
+        {
+          quarterSum += CTUPixel[i][j];
+        }
       }
+      
+      double quarterVar = variance(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR, quarterSum);
+      int n = (quarterHeight * quarterWidth);
+      double mean = (double) quarterSum / (double) n;
+      vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
+      double ratioGrads = (double) grads[0] / (double) grads[1];
+
+      quarter_xTL += quarterWidth;
+      quarter_xBR += quarterWidth;
+
+      block--;
+
+      quarters.push_back(quarterVar);
+      quarters.push_back(mean);
+      quarters.push_back(grads[0]);
+      quarters.push_back(grads[1]);
+      quarters.push_back(ratioGrads);
     }
-
-    double var = 0;
-    int n = quarterHeight * quarterWidth;
-    double mean = (double) sum / (double) n;
-
-    for(int i = yTL; i <= yBR; i++)
-    {
-      for(int j = xTL; j <= xTL; j++)
-      {
-        var += (CTUPixel[i][j] - mean) * (CTUPixel[i][j] - mean);
-      }
-    }
-    var = var / (double) n;
-    
-    quarters.push_back(var);
-    quarters.push_back(mean);
-    
-    blocks--;
-
-    xTL = xBR;
-    yTL = yBR;
-    xBR += quarterWidth;
-    yBR += quarterHeight;
   }
 
   return quarters;
