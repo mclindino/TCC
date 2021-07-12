@@ -54,6 +54,7 @@
 #include <algorithm>
 
 #include "../../App/EncoderApp/features.h"
+extern double extractionFeaturesTime;
 
 //! \ingroup EncoderLib
 //! \{
@@ -1248,7 +1249,12 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   
   //Lindino
   #if DATASET_PIXEL
+    clock_t Ticks[2];
+    Ticks[0] = clock();
     features::extractCUPixel(bestCS, split);
+    Ticks[1] = clock(); 
+    extractionFeaturesTime += (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
+
   #endif
 
 

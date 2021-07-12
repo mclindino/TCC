@@ -2,6 +2,7 @@
 
 ofstream features::file_features;
 ofstream features::file_target;
+ofstream features::file_pixel;
 double   features::frameWidth;
 double   features::frameHeight;
 int      features::qp;
@@ -69,13 +70,14 @@ features::features(string m_videoName, int m_iQP, double m_iSourceWidth, double 
   intraRDCost           = MAX_DOUBLE;
 
   createFile();
-  CTUFrame            = initCTUFrame();
+  CTUFrame              = initCTUFrame();
 }
 
 void features::createFile()
 {
-  file_features.open("dataset_" + videoName + "_" + to_string(qp) + "_features.csv", ios::app);
-  file_target.open("dataset_" + videoName + "_" + to_string(qp) + "_target.csv", ios::app);
+  //file_features.open("features/dataset_" + videoName + "_" + to_string(qp) + "_features.csv", ios::app);
+  //file_target.open("target/dataset_" + videoName + "_" + to_string(qp) + "_target.csv", ios::app);
+  file_pixel.open("pixel/dataset_" + videoName + "_" + to_string(qp) + "_pixel.csv", ios::app);
 
   /*file_features << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,"
                 << "depth,qtdepth,mtdepth,qp,predMode,skip,mmvdSkip,affine,affineType,colorTransform,geoFlag,bdpcmMode,"
@@ -83,16 +85,18 @@ void features::createFile()
                 << "currQP,lumaCost,POC,opts,maxCostAllowed,tlMaxQTDepth,tMaxQTDepth,trMaxQTDepth,lMaxQTDepth,previousMaxQTDepth,averageQTDepth,modeQTDepth,highestQTDepth,"
                 << "tlMaxMTDepth,tMaxMTDepth,trMaxMTDepth,lMaxMDepth,previousMaxMTDepth,averageMTDepth,modeMTDepth,highestMTDepth,interIMVRDCost,"
                 << "interRDCost,affineMergeRDCost,cachedResultRDCost,mergeRDCost,mergeGeoRDCost,intraRDCost,splitType" << endl; */
-  
-  file_features << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
-                << "PartSplit,cost" << endl;
 
-  file_target << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
-              << "PartSplit,RDCost" << endl;
+  file_pixel << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,qtdepth,mtdepth,"
+             << "variance,mean,gradientH,gradientV,ratioGrad,quarterVariance1,quarterVariance2,quarterVariance3,quarterVariance4,quarterMean1,quarterMean2,"
+             << "quarterMean3,quarterMean4,quarterGradH1,quarterGradV1,quarterGradH2,quarterGradV2,quarterGradH3,quarterGradV3,quarterGradH4,quarterGradV4,"
+             << "ratioGrad1,ratioGrad2,ratioGrad3,ratioGrad4" << endl;
+
+  //file_target << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
+  //            << "PartSplit,RDCost" << endl;
 }
 
 
-void features::extract_features(CodingUnit* cu, CodingStructure* cs, EncTestMode currTestMode)
+void features::extractFeatures(CodingUnit* cu, CodingStructure* cs, EncTestMode currTestMode)
 {
   interIMVRDCost                        = (interIMVRDCost     == MAX_DOUBLE)    ? -1 : interIMVRDCost;
   interRDCost                           = (interRDCost        == MAX_DOUBLE)    ? -1 : interRDCost;
@@ -425,9 +429,105 @@ void features::extractCUPixel(CodingStructure* cs, PartSplit split)
   double ratioGrads = (double) grads[0] / (double) grads[1];
   vector<double> quarters = quarterCU(xTL, yTL, xBR, yBR, split);
 
-  cout << "(" << xTL << "," << yTL << ") (" << xBR << "," << yBR << ") H:" << pixelHeight << " W:" << pixelWidth << endl;
+  var += 1; mean += 1; quarters[0] += 1; ratioGrads += 1;
+  /*file_pixel                          <<
+  videoName                             << "," <<
+  qp                                    << "," <<
+  frameWidth                            << "," <<        
+  frameHeight                           << "," <<         
+  int(cs->area.lwidth())                << "," <<
+  int(cs->area.lheight())               << "," <<
+  int(cs->area.Y().topLeft().x)         << "," <<
+  int(cs->area.Y().topLeft().y)         << "," << 
+  int(cs->area.Y().bottomRight().x)     << "," <<
+  int(cs->area.Y().bottomRight().y)     << "," <<
+  int(cs->cus[0]->qtDepth)              << "," <<
+  int(cs->cus[0]->mtDepth)              << "," << 
+  var                                   << "," << 
+  mean                                  << "," << 
+  grads[0]                              << "," << 
+  grads[1]                              << "," << 
+  ratioGrads                            << ",";
+
+  if (split == CU_QUAD_SPLIT)
+  {
+    file_pixel <<
+    quarters[0] << "," <<
+    quarters[5] << "," <<
+    quarters[10] << "," <<
+    quarters[15] << "," <<
+    quarters[1] << "," <<
+    quarters[6] << "," <<
+    quarters[11] << "," <<
+    quarters[16] << "," <<
+    quarters[2] << "," <<
+    quarters[7] << "," <<
+    quarters[12] << "," <<
+    quarters[17] << "," <<
+    quarters[3] << "," <<
+    quarters[8] << "," <<
+    quarters[13] << "," <<
+    quarters[18] << "," <<
+    quarters[4] << "," <<
+    quarters[9] << "," <<
+    quarters[14] << "," <<
+    quarters[19] << endl;
+  }
+
+  else if ((split == CU_VERT_SPLIT) || (split == CU_HORZ_SPLIT))
+  {
+    file_features << 
+    quarters[0] << "," <<
+    quarters[5] << "," <<
+    -1 << "," <<
+    -1 << "," <<
+    quarters[1] << "," <<
+    quarters[6] << "," <<
+    -1 << "," <<
+    -1 << "," <<
+    quarters[2] << "," <<
+    quarters[7] << "," <<
+    -1 << "," <<
+    -1 << "," <<
+    quarters[3] << "," <<
+    quarters[8] << "," <<
+    -1 << "," <<
+    -1 << "," <<
+    quarters[4] << "," <<
+    quarters[9] << "," <<
+    -1 << "," <<
+    -1 << endl;
+  }
+
+  else if ((split == CU_TRIH_SPLIT) || (split == CU_TRIV_SPLIT))
+  {
+    file_pixel <<
+    quarters[0] << "," <<
+    quarters[5] << "," <<
+    quarters[10] << "," <<
+    -1 << "," <<
+    quarters[1] << "," <<
+    quarters[6] << "," <<
+    quarters[11] << "," <<
+    -1 << "," <<
+    quarters[2] << "," <<
+    quarters[7] << "," <<
+    quarters[12] << "," <<
+    -1 << "," <<
+    quarters[3] << "," <<
+    quarters[8] << "," <<
+    quarters[13] << "," <<
+    -1 << "," <<
+    quarters[4] << "," <<
+    quarters[9] << "," <<
+    quarters[14] << "," <<
+    -1 << endl;
+  } */
+  /*cout << "Atual: (" << xTL << "," << yTL << ") (" << xBR << "," << yBR << ") H:" << pixelHeight << " W:" << pixelWidth << endl;
   cout << "\tVariance: " << var << "\tMean: " << mean << "\tGrad(X): " << grads[0] << "\tGrads(Y): " << grads[1] << "\tRadioGrad: " << ratioGrads << endl;
-  
+
+  cout << "Split: " << split << endl;
+
   if(split == CU_QUAD_SPLIT)
   {
     cout << "\tsubQuarterTL: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
@@ -447,6 +547,20 @@ void features::extractCUPixel(CodingStructure* cs, PartSplit split)
     cout << "\tsubQuarterR: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
         << "\n\tsubQuarterL: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9] << endl;
   }
+
+  else if(split == CU_TRIH_SPLIT)
+  {
+    cout << "\tsubQuarterT: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
+        << "\n\tsubQuarterM: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9]
+        << "\n\tsubQuarterB: Var: " << quarters[10] << " Mean: " << quarters[11] << " GradX: " << quarters[12] << " GradY: " << quarters[13] << " RatioGrad: " << quarters[14] << endl;
+  }
+
+  else if(split == CU_TRIV_SPLIT)
+  {
+    cout << "\tsubQuarterL: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
+        << "\n\tsubQuarterM: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9]
+        << "\n\tsubQuarterR: Var: " << quarters[10] << " Mean: " << quarters[11] << " GradX: " << quarters[12] << " GradY: " << quarters[13] << " RatioGrad: " << quarters[14] << endl;
+  }*/
 }
 
 double features::variance(int xTL, int yTL, int xBR, int yBR, int varSum)
@@ -565,7 +679,6 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
 
     while(block != 0)
     {
-      cout << "(" << quarter_xTL << "," << quarter_yTL << ") (" << quarter_xBR << "," << quarter_yBR << ")" << endl;
       int quarterSum = 0;
       for(int i = quarter_yTL; i <= quarter_yBR; i++)
       {
@@ -615,7 +728,6 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
 
     while(block != 0)
     {
-      cout << "(" << quarter_xTL << "," << quarter_yTL << ") (" << quarter_xBR << "," << quarter_yBR << ")" << endl;
       int quarterSum = 0;
       for(int i = quarter_yTL; i <= quarter_yBR; i++)
       {
@@ -658,7 +770,6 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
 
     while(block != 0)
     {
-      cout << "(" << quarter_xTL << "," << quarter_yTL << ") (" << quarter_xBR << "," << quarter_yBR << ")" << endl;
       int quarterSum = 0;
       for(int i = quarter_yTL; i <= quarter_yBR; i++)
       {
@@ -677,6 +788,106 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
       quarter_xTL += quarterWidth;
       quarter_xBR += quarterWidth;
 
+      block--;
+
+      quarters.push_back(quarterVar);
+      quarters.push_back(mean);
+      quarters.push_back(grads[0]);
+      quarters.push_back(grads[1]);
+      quarters.push_back(ratioGrads);
+    }
+  }
+
+  if(split == CU_TRIH_SPLIT)
+  {
+    int maxHeight = (yBR - yTL + 1);
+    int maxWidth  = (xBR - xTL + 1);
+    int quarterHeight = maxHeight / 4;
+    int quarterWidth  = maxWidth;
+    int quarter_xTL = xTL;
+    int quarter_yTL = yTL;
+    int quarter_xBR = xBR;
+    int quarter_yBR = yBR - (3 * quarterHeight);
+    int block = 3;
+
+    while(block != 0)
+    {
+      int quarterSum = 0;
+      for(int i = quarter_yTL; i <= quarter_yBR; i++)
+      {
+        for(int j = quarter_xTL; j <= quarter_xBR; j++)
+        {
+          quarterSum += CTUPixel[i][j];
+        }
+      }
+      
+      double quarterVar = variance(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR, quarterSum);
+      int n = (quarterHeight * quarterWidth);
+      double mean = (double) quarterSum / (double) n;
+      vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
+      double ratioGrads = (double) grads[0] / (double) grads[1];
+
+      if(block == 3)
+      {
+        quarter_yTL += quarterHeight;
+        quarter_yBR += (2 * quarterHeight);
+      }
+      else if (block == 2)
+      {
+        quarter_yTL += (2 * quarterHeight);
+        quarter_yBR += quarterHeight;
+      }
+      
+      block--;
+
+      quarters.push_back(quarterVar);
+      quarters.push_back(mean);
+      quarters.push_back(grads[0]);
+      quarters.push_back(grads[1]);
+      quarters.push_back(ratioGrads);
+    }
+  }
+
+  if(split == CU_TRIV_SPLIT)
+  {
+    int maxHeight = (yBR - yTL + 1);
+    int maxWidth  = (xBR - xTL + 1);
+    int quarterHeight = maxHeight;
+    int quarterWidth  = maxWidth / 4;
+    int quarter_xTL = xTL;
+    int quarter_yTL = yTL;
+    int quarter_xBR = xBR - (3 * quarterWidth);
+    int quarter_yBR = yBR;
+    int block = 3;
+
+    while(block != 0)
+    {
+      int quarterSum = 0;
+      for(int i = quarter_yTL; i <= quarter_yBR; i++)
+      {
+        for(int j = quarter_xTL; j <= quarter_xBR; j++)
+        {
+          quarterSum += CTUPixel[i][j];
+        }
+      }
+      
+      double quarterVar = variance(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR, quarterSum);
+      int n = (quarterHeight * quarterWidth);
+      double mean = (double) quarterSum / (double) n;
+      vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
+      double ratioGrads = (double) grads[0] / (double) grads[1];
+
+      if(block == 3)
+      {
+        quarter_xTL += quarterWidth;
+        quarter_xBR += (2 * quarterWidth);
+      }
+      else if (block == 2)
+      {
+        quarter_xTL += (2 * quarterWidth);
+        quarter_xBR += quarterWidth;
+      }
+      
       block--;
 
       quarters.push_back(quarterVar);

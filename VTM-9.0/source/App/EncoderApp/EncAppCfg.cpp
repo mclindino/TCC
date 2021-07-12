@@ -1580,7 +1580,8 @@ bool EncAppCfg::parseCfg( int argc, char* argv[] )
   }
   m_inputFileName   = inputPathPrefix + m_inputFileName;
 
-   /*lindino*/ features(m_videoName, m_iQP, double(m_iSourceWidth), double(m_iSourceHeight));
+   /*lindino*/ 
+  features(m_videoName, m_iQP, double(m_iSourceWidth), double(m_iSourceHeight));
 
   if( m_temporalSubsampleRatio < 1)
   {

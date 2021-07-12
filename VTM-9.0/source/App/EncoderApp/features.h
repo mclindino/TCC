@@ -32,7 +32,8 @@ class features
 private:
     static ofstream file_features;
     static ofstream file_target;
-    
+    static ofstream file_pixel;
+
     /*Extract from EncAppCfg*/
     static string  videoName;
     static double  frameWidth;
@@ -66,12 +67,11 @@ private:
 
     /* Auxiliar Variables for Pixel Features */
     static unsigned short CTUPixel[128][128];
-
 public:
 
     features                                        (string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight);
     static void    createFile                       ();
-    static void    extract_features                 (CodingUnit* cu, CodingStructure* cs, EncTestMode currTestMode);
+    static void    extractFeatures                 (CodingUnit* cu, CodingStructure* cs, EncTestMode currTestMode);
     static void    ctuDepth                         (CodingStructure* cs);
     static int***  initCTUFrame                     ();
     static void    updateCTUFrame                   ();

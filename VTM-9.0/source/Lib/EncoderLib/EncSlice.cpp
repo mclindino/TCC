@@ -1716,10 +1716,8 @@ void EncSlice::encodeCtus( Picture* pcPic, const bool bCompressEntireSlice, cons
 #endif
 
     /*lindino*/ 
-    #if DATASET_EXTRACTION_DEPTH
-      features::ctuDepth(&cs);
-    #endif
-
+    features::ctuDepth(&cs);
+    
     pCABACWriter->resetBits();
     pCABACWriter->coding_tree_unit( cs, ctuArea, prevQP, ctuRsAddr, true, true );
     const int numberOfWrittenBits = int( pCABACWriter->getEstFracBits() >> SCALE_BITS );

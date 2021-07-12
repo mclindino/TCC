@@ -45,7 +45,7 @@
 #include "Utilities/program_options_lite.h"
 
 /*lindino*/ #include "features.h"
-
+/*lindino*/ double extractionFeaturesTime = 0;
 //! \ingroup EncoderApp
 //! \{
 
@@ -315,9 +315,9 @@ int main(int argc, char* argv[])
          encTime / 1000.0,
          totalTime / 1000.0);
 #else
-  printf(" Total Time: %12.3f sec. [user] %12.3f sec. [elapsed]\n",
+  printf(" Total Time: %12.3f sec. [user] %12.3f sec. [elapsed]\n ExtractionFeaturesTime: %12.3f sec. \n",
          (endClock - startClock) * 1.0 / CLOCKS_PER_SEC,
-         encTime / 1000.0);
+         encTime / 1000.0, extractionFeaturesTime);
 #endif
 
   return 0;
