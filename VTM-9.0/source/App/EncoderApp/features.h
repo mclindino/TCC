@@ -67,6 +67,7 @@ private:
 
     /* Auxiliar Variables for Pixel Features */
     static unsigned short CTUPixel[128][128];
+
 public:
 
     features                                        (string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight);
@@ -86,8 +87,9 @@ public:
     static void    setMergeGeoRDCost                (double m_geo);
     static void    setIntraRDCost                   (double m_intra);
     static void    extractTarget                    (CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode, bool before);
-    static void    extractCUPixel                   (CodingStructure* cs, PartSplit split);
+    static void    extractCUPixel                   (CodingStructure* cs, PartSplit split, Partitioner* partitioner);
     static double  variance                         (int xTL, int yTL, int xBR, int yBR, int varSum);
     static vector<unsigned short>  gradients        (int xTL, int yTL, int xBR, int yBR);
     static vector<double>  quarterCU                (int xTL, int yTL, int xBR, int yBR, PartSplit split);
+    static string enumToString                      (int value);               
 };

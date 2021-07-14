@@ -1251,7 +1251,7 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   #if DATASET_PIXEL
     clock_t Ticks[2];
     Ticks[0] = clock();
-    features::extractCUPixel(bestCS, split);
+    if(partitioner.chType == CHANNEL_TYPE_LUMA)   features::extractCUPixel(bestCS, split, &partitioner);
     Ticks[1] = clock(); 
     extractionFeaturesTime += (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
 
@@ -1594,9 +1594,6 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
 
   // RD check for sub partitioned coding structure.
   xCheckBestMode( tempCS, bestCS, partitioner, encTestMode );
-
-  /*lindino*/
-
   
   if (isAffMVInfoSaved)
     m_pcInterSearch->addAffMVInfo(tmpMVInfo);
