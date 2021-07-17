@@ -57,6 +57,8 @@ out_VTM/
 VTM-9.0-ML/
 myCFGs/
 video_bin/
+features/
+pixel/
 
 # Outros arquivos
 *.yuv
