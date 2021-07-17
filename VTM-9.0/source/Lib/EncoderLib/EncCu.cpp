@@ -866,30 +866,7 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           }
         }
 
-        /*lindino*/
-        #if DATASET_EXTRACTION_FEATURES
-          
-          if (partitioner.chType == CHANNEL_TYPE_LUMA)
-          {
-            for(int i = 0; i < bestCS->cus.size(); i++)
-              features::extractFeatures(bestCS->cus[i], bestCS, currTestMode);
-              //features::extractTarget(bestCS, bestCS->cus[i], currTestMode, true);
-          }
-        
-        #endif
-
         xCheckModeSplit( tempCS, bestCS, partitioner, currTestMode, modeTypeParent, skipInterPass );
-        
-        /*lindino*/
-        #if DATASET_EXTRACTION_TARGET
-          if (partitioner.chType == CHANNEL_TYPE_LUMA)
-          {
-            for(int i = 0; i < bestCS->cus.size(); i++)
-              features::extractTarget(bestCS, bestCS->cus[i], currTestMode, false);
-
-            //features::extract_target_partitioner(bestCS, &partitioner, encTestMode);
-          }
-        #endif
 
         //recover cons modes
         tempCS->modeType = partitioner.modeType = modeTypeParent;
@@ -1247,14 +1224,41 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
 
   const PartSplit split = getPartSplit( encTestMode );
   
+  /*lindino*/
+  #if DATASET_EXTRACTION_FEATURES
+
+    for(int i = 0; i < bestCS->cus.size(); i++)
+    {
+      if (partitioner.chType == CHANNEL_TYPE_LUMA) features::extractFeatures(bestCS->cus[i], bestCS, encTestMode);
+    }
+  
+  #endif
+
   //Lindino
   #if DATASET_PIXEL
     clock_t Ticks[2];
     Ticks[0] = clock();
-    if(partitioner.chType == CHANNEL_TYPE_LUMA)   features::extractCUPixel(bestCS, split, &partitioner);
+    int rf_control = 1;
+    if(partitioner.chType == CHANNEL_TYPE_LUMA)
+    {
+      features::extractCUPixel(bestCS, split, &partitioner);
+      if (split == CU_QUAD_SPLIT)
+      {
+        rf_control = features::predictQUADSPLIT(bestCS);
+      }
+      else if ((split == CU_HORZ_SPLIT) || (split == CU_TRIH_SPLIT))
+      {
+        rf_control = features::predictHORZSPLIT(bestCS);
+      }
+      else if ((split == CU_VERT_SPLIT) || (split == CU_TRIV_SPLIT))
+      {
+        rf_control = features::predictVERTSPLIT(bestCS);
+      }
+    }
     Ticks[1] = clock(); 
     extractionFeaturesTime += (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
 
+    if(!rf_control) return;
   #endif
 
 
@@ -1595,6 +1599,16 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   // RD check for sub partitioned coding structure.
   xCheckBestMode( tempCS, bestCS, partitioner, encTestMode );
   
+  /*lindino*/
+  #if DATASET_EXTRACTION_TARGET
+
+    for(int i = 0; i < bestCS->cus.size(); i++)
+    {
+      if (partitioner.chType == CHANNEL_TYPE_LUMA) features::extractTarget(bestCS, bestCS->cus[i], encTestMode);
+    }
+
+  #endif
+
   if (isAffMVInfoSaved)
     m_pcInterSearch->addAffMVInfo(tmpMVInfo);
   if (!tempCS->slice->isIntra() && isUniMvInfoSaved)

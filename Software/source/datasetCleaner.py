@@ -3,6 +3,11 @@ import pandas as pd
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
+from warnings import simplefilter
+simplefilter(action='ignore', category=FutureWarning)
+from sklearn_porter import Porter
+import fileinput
+from imblearn.over_sampling import SMOTE
 
 class datasetCleaner:
 
@@ -59,7 +64,50 @@ class datasetCleaner:
 		forest_importances = pd.Series(importances, index = self.X.columns)
 		forest_importances.plot.bar(yerr = std, figsize = (20,8));
 
-	def fastTraining(self):
-		forest = RandomForestClassifier(random_state = 0)
-		scores = cross_val_score(forest, self.X, self.y, cv = 10, n_jobs = 2)
-		return scores.mean()
+	def fastTraining(self, returnMethod = False, div = None, split = None):
+		oversample = SMOTE()
+		self.X, self.y = oversample.fit_resample(self.X, self.y)
+		forest = RandomForestClassifier(n_estimators = 10, random_state = 0)
+		
+		if returnMethod:
+			forest.fit(self.X, self.y)
+			file = open('../datasets/models/' + split + '/' + div + '_' + split + '.cpp', 'w')
+			porter = Porter(forest, language='c')
+			output = porter.export(embed_data=True)
+			file.write(output)
+			file.close()
+			library = []
+			for i in range(10):
+				with fileinput.FileInput('../datasets/models/' + split + '/' + div + '_' + split + '.cpp', inplace = True) as file:
+					for line in file:
+						print(line.replace('predict_' + str(i), 'predict_' + str(i) + '_' + div + '_' + split), end = '')
+
+			with fileinput.FileInput('../datasets/models/' + split + '/' + div + '_' + split + '.cpp', inplace = True) as file:
+				for line in file:
+					print(line.replace('predict (', 'predict_' + div + '_' + split + ' ('), end = '')
+
+			with open('../datasets/models/' + split + '/' + div + '_' + split + '.cpp', "r+") as f:
+				d = f.readlines()
+				library = d[0:4]
+				f.seek(0)
+				f.write('#include \"' + div + "_" + split + '.h\"\n')
+				for i in range(4,len(d)-10):
+					f.write(d[i])
+				f.truncate()
+				
+			library_file = open('../datasets/models/' + split + '/' + div + '_' + split + '.h', 'w')
+			library_file.writelines(library)
+			library_file.write('int predict_' + div + '_' + split + '(float features[]);')
+			library_file.close()
+
+
+			features = self.X.columns
+			features_file = open('../datasets/models/' + split + '/features_' + div + '_' + split + '.txt', 'w')
+			features_file.write('float features_' + div + '_' + split + '[' + str(features.shape[0]) + '];\n')
+			for f in range(features.shape[0]):
+				features_file.write('features_' + div + '_' + split + '[' + str(f) + '] = rf_' + features[f] + ';\n')
+			features_file.close()
+
+		else:
+			scores = cross_val_score(forest, self.X, self.y, cv = 10, n_jobs = 2)
+			return scores.mean()

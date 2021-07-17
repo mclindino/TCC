@@ -29,6 +29,46 @@ double   features::mergeRDCost;
 double   features::mergeGeoRDCost;
 double   features::intraRDCost;
 unsigned short features::CTUPixel[128][128];
+int            features::rf_paramQP;
+int            features::rf_CU_width;
+int            features::rf_CU_height;
+int            features::rf_topLeft_x;
+int            features::rf_topLeft_y;
+int            features::rf_bottomRight_x;
+int            features::rf_bottomRight_y;
+int            features::rf_POC;
+int            features::rf_qtdepth;
+int            features::rf_mtdepth;
+double         features::rf_variance;
+double         features::rf_mean;
+unsigned short features::rf_gradientH;
+unsigned short features::rf_gradientV;
+double         features::rf_ratioGrad;
+int            features::rf_sum;
+double         features::rf_quarter1Var;
+double         features::rf_quarter1Mean;
+unsigned short features::rf_quarter1GradH;
+unsigned short features::rf_quarter1GradV;
+double         features::rf_quarter1RatioGrad;
+int            features::rf_quarter1Sum;
+double         features::rf_quarter2Var;
+double         features::rf_quarter2Mean;
+unsigned short features::rf_quarter2GradH;
+unsigned short features::rf_quarter2GradV;
+double         features::rf_quarter2RatioGrad;
+int            features::rf_quarter2Sum;
+double         features::rf_quarter3Var;
+double         features::rf_quarter3Mean;
+unsigned short features::rf_quarter3GradH;
+unsigned short features::rf_quarter3GradV;
+double         features::rf_quarter3RatioGrad;
+int            features::rf_quarter3Sum;
+double         features::rf_quarter4Var;
+double         features::rf_quarter4Mean;
+unsigned short features::rf_quarter4GradH;
+unsigned short features::rf_quarter4GradV;
+double         features::rf_quarter4RatioGrad;
+int            features::rf_quarter4Sum;
 
 features::features(string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight)
 { 
@@ -77,7 +117,6 @@ void features::createFile()
 {
   file_features.open("features/dataset_" + videoName + "_" + to_string(qp) + "_features.csv", ios::app);
   file_target.open("target/dataset_" + videoName + "_" + to_string(qp) + "_target.csv", ios::app);
-  //file_pixel.open("pixel/dataset_" + videoName + "_" + to_string(qp) + "_pixel.csv", ios::app);
 
   file_features << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,"
                 << "depth,qtdepth,mtdepth,qp,predMode,skip,mmvdSkip,affine,affineType,colorTransform,geoFlag,bdpcmMode,"
@@ -86,11 +125,6 @@ void features::createFile()
                 << "tlMaxMTDepth,tMaxMTDepth,trMaxMTDepth,lMaxMDepth,previousMaxMTDepth,averageMTDepth,modeMTDepth,highestMTDepth,interIMVRDCost,"
                 << "interRDCost,affineMergeRDCost,cachedResultRDCost,mergeRDCost,mergeGeoRDCost,intraRDCost,splitType" << endl;
 
-  /*file_pixel << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,split,"
-             << "variance,mean,gradientH,gradientV,ratioGrad,sum,quarter1Var,quarter1Mean,quarter1GradH,quarter1GradV,quarter1RatioGrad,"
-             << "quarter2Var,quarter2Mean,quarter2GradH,quarter2GradV,quarter2RatioGrad,quarter3Var,quarter3Mean,quarter3GradH,quarter3GradV,quarter3RatioGrad,"
-             << "quarter4Var,quarter4Mean,quarter4GradH,quarter4GradV,quarter4RatioGrad" << endl;*/
-  
   file_target << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
              << "splitType,RDCost" << endl;
 }
@@ -181,47 +215,24 @@ void features::extractFeatures(CodingUnit* cu, CodingStructure* cs, EncTestMode 
 
 }
 
-void features::extractTarget(CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode, bool before)
+void features::extractTarget(CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode)
 {
-  if (before)
-  {
-    file_features                     <<
-    videoName                         << "," <<
-    qp                                << "," <<
-    frameWidth                        << "," <<        
-    frameHeight                       << "," <<         
-    int(cu->lwidth())                 << "," <<
-    int(cu->lheight())                << "," <<
-    int(cu->Y().topLeft().x)          << "," <<
-    int(cu->Y().topLeft().y)          << "," << 
-    int(cu->Y().bottomRight().x)      << "," <<
-    int(cu->Y().bottomRight().y)      << "," <<
-    int(cs->picture->getPOC())        << "," <<
-    int(cu->qtDepth)                  << "," <<
-    int(cu->mtDepth)                  << "," <<
-    int(getPartSplit(currTestMode))   << "," <<
-    int(cs->cost)                     << endl;
-  }
-
-  else
-  {
-    file_target                       <<
-    videoName                         << "," <<
-    qp                                << "," <<
-    frameWidth                        << "," <<        
-    frameHeight                       << "," <<         
-    int(cu->lwidth())                 << "," <<
-    int(cu->lheight())                << "," <<
-    int(cu->Y().topLeft().x)          << "," <<
-    int(cu->Y().topLeft().y)          << "," << 
-    int(cu->Y().bottomRight().x)      << "," <<
-    int(cu->Y().bottomRight().y)      << "," <<
-    int(cs->picture->getPOC())        << "," <<
-    int(cu->qtDepth)                  << "," <<
-    int(cu->mtDepth)                  << "," <<
-    int(getPartSplit(currTestMode))   << "," <<
-    int(cs->cost)                     << endl;
-  }
+  file_target                       <<
+  videoName                         << "," <<
+  qp                                << "," <<
+  frameWidth                        << "," <<        
+  frameHeight                       << "," <<         
+  int(cu->lwidth())                 << "," <<
+  int(cu->lheight())                << "," <<
+  int(cu->Y().topLeft().x)          << "," <<
+  int(cu->Y().topLeft().y)          << "," << 
+  int(cu->Y().bottomRight().x)      << "," <<
+  int(cu->Y().bottomRight().y)      << "," <<
+  int(cs->picture->getPOC())        << "," <<
+  int(cu->qtDepth)                  << "," <<
+  int(cu->mtDepth)                  << "," <<
+  int(getPartSplit(currTestMode))   << "," <<
+  int(cs->cost)                     << endl;
 }
 
 int*** features::initCTUFrame()
@@ -454,170 +465,311 @@ void features::extractCUPixel(CodingStructure* cs, PartSplit split, Partitioner*
   vector<unsigned short> grads = gradients(0, 0, pixelWidth-1, pixelHeight-1);
   double ratioGrads = (double) grads[0] / (double) grads[1];
   vector<double> quarters = quarterCU(0, 0, pixelWidth-1, pixelHeight-1, split);
-  
-  file_pixel                            <<
-  videoName                             << "," <<
-  qp                                    << "," <<
-  frameWidth                            << "," <<        
-  frameHeight                           << "," <<         
-  int(cs->area.lwidth())                << "," <<
-  int(cs->area.lheight())               << "," <<
-  int(cs->area.Y().topLeft().x)         << "," <<
-  int(cs->area.Y().topLeft().y)         << "," << 
-  int(cs->area.Y().bottomRight().x)     << "," <<
-  int(cs->area.Y().bottomRight().y)     << "," <<
-  int(cs->picture->getPOC())            << "," <<
-  int(partitioner->currQtDepth)         << "," <<
-  int(partitioner->currMtDepth)         << "," <<
-  enumToString(split)                   << "," <<
-  var                                   << "," << 
-  mean                                  << "," << 
-  grads[0]                              << "," << 
-  grads[1]                              << "," << 
-  ratioGrads                            << "," <<
-  sum                                   << ",";
 
-  /*cout << "Atual: (" << xTL << "," << yTL << ") (" << xBR << "," << yBR << ") H:" << pixelHeight << " W:" << pixelWidth << endl;
-  cout << "\tVariance: " << var << "\tMean: " << mean << "\tGrad(X): " << grads[0] << "\tGrads(Y): " << grads[1] << "\tRadioGrad: " << ratioGrads << endl;
-  cout << "Split: " << split << endl;
+  rf_paramQP            = qp;
+  rf_CU_width           = pixelWidth;
+  rf_CU_height          = pixelHeight;
+  rf_topLeft_x          = xTL;
+  rf_topLeft_y          = yTL;
+  rf_bottomRight_x      = xBR;
+  rf_bottomRight_y      = yBR;
+  rf_POC                = int(cs->picture->getPOC());
+  rf_qtdepth            = int(partitioner->currQtDepth);
+  rf_mtdepth            = int(partitioner->currMtDepth);
+  rf_variance           = var;
+  rf_mean               = mean;
+  rf_gradientH          = grads[0];
+  rf_gradientV          = grads[1];
+  rf_ratioGrad          = ratioGrads;
+  rf_sum                = sum;
+  rf_quarter1Var        = quarters[0];
+  rf_quarter1Mean       = quarters[1];
+  rf_quarter1GradH      = quarters[2];
+  rf_quarter1GradV      = quarters[3];
+  rf_quarter1RatioGrad  = quarters[4];
+  rf_quarter1Sum        = quarters[5];
+  rf_quarter2Var        = quarters[6];
+  rf_quarter2Mean       = quarters[7];
+  rf_quarter2GradH      = quarters[8];
+  rf_quarter2GradV      = quarters[9];
+  rf_quarter2RatioGrad  = quarters[10];
+  rf_quarter2Sum        = quarters[11];
+  
+  if ((split == CU_TRIH_SPLIT) || (split == CU_TRIV_SPLIT) || (split == CU_QUAD_SPLIT))
+  {
+    rf_quarter3Var        = quarters[12];
+    rf_quarter3Mean       = quarters[13];
+    rf_quarter3GradH      = quarters[14];
+    rf_quarter3GradV      = quarters[15];
+    rf_quarter3RatioGrad  = quarters[16];
+    rf_quarter3Sum        = quarters[17];
 
-  if (split == CU_QUAD_SPLIT)
-  {
-    file_pixel <<
-    quarters[0] << "," <<
-    quarters[1] << "," <<
-    quarters[2] << "," <<
-    quarters[3] << "," <<
-    quarters[4] << "," <<
-    quarters[5] << "," <<
-    quarters[6] << "," <<
-    quarters[7] << "," <<
-    quarters[8] << "," <<
-    quarters[9] << "," <<
-    quarters[10] << "," <<
-    quarters[11] << "," <<
-    quarters[12] << "," <<
-    quarters[13] << "," <<
-    quarters[14] << "," <<
-    quarters[15] << "," <<
-    quarters[16] << "," <<
-    quarters[17] << "," <<
-    quarters[18] << "," <<
-    quarters[19] << endl;
+    if(split == CU_QUAD_SPLIT)
+    {
+      rf_quarter4Var        = quarters[18];
+      rf_quarter4Mean       = quarters[19];
+      rf_quarter4GradH      = quarters[20];
+      rf_quarter4GradV      = quarters[21];
+      rf_quarter4RatioGrad  = quarters[22];
+      rf_quarter4Sum        = quarters[23];
+    }
   }
-  
-  
-  else if ((split == CU_VERT_SPLIT) || (split == CU_HORZ_SPLIT))
-  {
-    file_pixel <<
-    quarters[0] << "," <<
-    quarters[1] << "," <<
-    quarters[2] << "," <<
-    quarters[3] << "," <<
-    quarters[4] << "," <<
-    quarters[5] << "," <<
-    quarters[6] << "," <<
-    quarters[7] << "," <<
-    quarters[8] << "," <<
-    quarters[9] << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << endl;
-  } */
-  
-  //else 
-  
-  if ((split == CU_TRIH_SPLIT) || (split == CU_TRIV_SPLIT))
-  {
-    file_pixel <<
-    quarters[0] << "," <<
-    quarters[1] << "," <<
-    quarters[2] << "," <<
-    quarters[3] << "," <<
-    quarters[4] << "," <<
-    quarters[5] << "," <<
-    quarters[6] << "," <<
-    quarters[7] << "," <<
-    quarters[8] << "," <<
-    quarters[9] << "," <<
-    quarters[10] << "," <<
-    quarters[11] << "," <<
-    quarters[12] << "," <<
-    quarters[13] << "," <<
-    quarters[14] << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << endl;
-  }
-  else
-  {
-    file_pixel <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1 << "," <<
-    -1  << "," <<
-    -1  << "," <<
-    -1  << "," <<
-    -1  << "," <<
-    -1  << "," <<
-    -1  << "," <<
-    -1  << "," <<
-    -1  << "," <<
-    -1  << "," <<
-    -1  << endl;
-  }
-/*
+}
 
-  if(split == CU_QUAD_SPLIT)
-  {
-    cout << "\tsubQuarterTL: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
-        << "\n\tsubQuarterTR: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9]
-        << "\n\tsubQuarterBL: Var: " << quarters[10] << " Mean: " << quarters[11] << " GradX: " << quarters[12] << " GradY: " << quarters[13] << " RatioGrad: " << quarters[14]
-        << "\n\tsubQuarterBR: Var: " << quarters[15] << " Mean: " << quarters[16] << " GradX: " << quarters[17] << " GradY: " << quarters[18] << " RatioGrad: " << quarters[19] << endl;
-  } 
-
-  else if(split == CU_HORZ_SPLIT)
-  {
-    cout << "\tsubQuarterT: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
-        << "\n\tsubQuarterB: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9] << endl;
-  }
+float* features::getFeaturesRF(int type)
+{
+  float* features;
   
-  else if(split == CU_VERT_SPLIT)
+  if (type == 1)
   {
-    cout << "\tsubQuarterR: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
-        << "\n\tsubQuarterL: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9] << endl;
+    features = (float *) malloc(sizeof(float) * 34);
+    features[0] = rf_paramQP;
+    features[1] = rf_CU_width;
+    features[2] = rf_CU_height;
+    features[3] = rf_topLeft_x;
+    features[4] = rf_topLeft_y;
+    features[5] = rf_bottomRight_x;
+    features[6] = rf_bottomRight_y;
+    features[7] = rf_POC;
+    features[8] = rf_qtdepth;
+    features[9] = rf_mtdepth;
+    features[10] = rf_variance;
+    features[11] = rf_mean;
+    features[12] = rf_gradientH;
+    features[13] = rf_gradientV;
+    features[14] = rf_ratioGrad;
+    features[15] = rf_sum;
+    features[16] = rf_quarter1Var;
+    features[17] = rf_quarter1Mean;
+    features[18] = rf_quarter1GradH;
+    features[19] = rf_quarter1GradV;
+    features[20] = rf_quarter1RatioGrad;
+    features[21] = rf_quarter1Sum;
+    features[22] = rf_quarter2Var;
+    features[23] = rf_quarter2Mean;
+    features[24] = rf_quarter2GradH;
+    features[25] = rf_quarter2GradV;
+    features[26] = rf_quarter2RatioGrad;
+    features[27] = rf_quarter2Sum;
+    features[28] = rf_quarter3Var;
+    features[29] = rf_quarter3Mean;
+    features[30] = rf_quarter3GradH;
+    features[31] = rf_quarter3GradV;
+    features[32] = rf_quarter3RatioGrad;
+    features[33] = rf_quarter3Sum;
+  }
+  else if(type == 2)
+  {
+    features = (float *) malloc(sizeof(float) * 32);
+    features[0] = rf_paramQP;
+    features[1] = rf_topLeft_x;
+    features[2] = rf_topLeft_y;
+    features[3] = rf_bottomRight_x;
+    features[4] = rf_bottomRight_y;
+    features[5] = rf_POC;
+    features[6] = rf_qtdepth;
+    features[7] = rf_mtdepth;
+    features[8] = rf_variance;
+    features[9] = rf_mean;
+    features[10] = rf_gradientH;
+    features[11] = rf_gradientV;
+    features[12] = rf_ratioGrad;
+    features[13] = rf_sum;
+    features[14] = rf_quarter1Var;
+    features[15] = rf_quarter1Mean;
+    features[16] = rf_quarter1GradH;
+    features[17] = rf_quarter1GradV;
+    features[18] = rf_quarter1RatioGrad;
+    features[19] = rf_quarter1Sum;
+    features[20] = rf_quarter2Var;
+    features[21] = rf_quarter2Mean;
+    features[22] = rf_quarter2GradH;
+    features[23] = rf_quarter2GradV;
+    features[24] = rf_quarter2RatioGrad;
+    features[25] = rf_quarter2Sum;
+    features[26] = rf_quarter3Var;
+    features[27] = rf_quarter3Mean;
+    features[28] = rf_quarter3GradH;
+    features[29] = rf_quarter3GradV;
+    features[30] = rf_quarter3RatioGrad;
+    features[31] = rf_quarter3Sum;
   }
 
-  else if(split == CU_TRIH_SPLIT)
-  {
-    cout << "\tsubQuarterT: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
-        << "\n\tsubQuarterM: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9]
-        << "\n\tsubQuarterB: Var: " << quarters[10] << " Mean: " << quarters[11] << " GradX: " << quarters[12] << " GradY: " << quarters[13] << " RatioGrad: " << quarters[14] << endl;
-  }
+  pixelFeaturesZero();
+  return features;
 
-  else if(split == CU_TRIV_SPLIT)
+}
+
+void features::pixelFeaturesZero()
+{
+  rf_paramQP            = -1;
+  rf_CU_width           = -1;
+  rf_CU_height          = -1;
+  rf_topLeft_x          = -1;
+  rf_topLeft_y          = -1;
+  rf_bottomRight_x      = -1;
+  rf_bottomRight_y      = -1;
+  rf_POC                = -1;
+  rf_qtdepth            = -1;
+  rf_mtdepth            = -1;
+  rf_variance           = -1;
+  rf_mean               = -1;
+  rf_gradientH          = -1;
+  rf_gradientV          = -1;
+  rf_ratioGrad          = -1;
+  rf_sum                = -1;
+  rf_quarter1Var        = -1;
+  rf_quarter1Mean       = -1;
+  rf_quarter1GradH      = -1;
+  rf_quarter1GradV      = -1;
+  rf_quarter1RatioGrad  = -1;
+  rf_quarter1Sum        = -1;
+  rf_quarter2Var        = -1;
+  rf_quarter2Mean       = -1;
+  rf_quarter2GradH      = -1;
+  rf_quarter2GradV      = -1;
+  rf_quarter2RatioGrad  = -1;
+  rf_quarter2Sum        = -1;
+  rf_quarter3Var        = -1;
+  rf_quarter3Mean       = -1;
+  rf_quarter3GradH      = -1;
+  rf_quarter3GradV      = -1;
+  rf_quarter3RatioGrad  = -1;
+  rf_quarter3Sum        = -1;
+  rf_quarter4Var        = -1;
+  rf_quarter4Mean       = -1;
+  rf_quarter4GradH      = -1;
+  rf_quarter4GradV      = -1;
+  rf_quarter4RatioGrad  = -1;
+  rf_quarter4Sum        = -1;
+}
+
+int features::predictQUADSPLIT (CodingStructure* cs)
+{
+  /*int block_size = int(cs->area.lheight()) * int(cs->area.lwidth());
+
+  switch (block_size)
   {
-    cout << "\tsubQuarterL: Var: " << quarters[0] << " Mean: " << quarters[1] << " GradX: " << quarters[2] << " GradY: " << quarters[3] << " RatioGrad: " << quarters[4]
-        << "\n\tsubQuarterM: Var: " << quarters[5] << " Mean: " << quarters[6] << " GradX: " << quarters[7] << " GradY: " << quarters[8] << " RatioGrad: " << quarters[9]
-        << "\n\tsubQuarterR: Var: " << quarters[10] << " Mean: " << quarters[11] << " GradX: " << quarters[12] << " GradY: " << quarters[13] << " RatioGrad: " << quarters[14] << endl;
+  case 16384:
+    return predict_s0_QT_SPLIT(pixelFeatures);
+    break;
+  
+  case 8192:
+    return predict_s1_QT_SPLIT(pixelFeatures);
+    break;
+  
+  case 4096:
+    return predict_s2_QT_SPLIT(pixelFeatures);
+    break;
+  
+  case 2048:
+    return predict_s3_QT_SPLIT(pixelFeatures);
+    break;
+  
+  case 1024:
+    return predict_s4_QT_SPLIT(pixelFeatures);
+    break;
+  
+  case 512:
+    return predict_s5_QT_SPLIT(pixelFeatures);
+    break;
+  
+  case 256:
+    return predict_s6_QT_SPLIT(pixelFeatures);
+    break;
+  
+  default:
+    cout << "Nenhuma Tomada de Decisão" << endl;
+    return 1;
+    break;
   }
   */
+ return 1;
+}
+int features::predictHORZSPLIT (CodingStructure* cs)
+{
+  int block_size = int(cs->area.lheight()) * int(cs->area.lwidth());
+  float* pixelFeatures = getFeaturesRF(1);
+  switch (block_size)
+  {
+  /*case 16384:
+    return predict_s0_HORZ_SPLIT(pixelFeatures);
+    break;
+  
+  case 8192:
+    return predict_s1_HORZ_SPLIT(pixelFeatures);
+    break;
+  
+  case 4096:
+    return predict_s2_HORZ_SPLIT(pixelFeatures);
+    break;
+  
+  case 2048:
+    return predict_s3_HORZ_SPLIT(pixelFeatures);
+    break;
+  
+  case 1024:
+    return predict_s4_HORZ_SPLIT(pixelFeatures);
+    break; */
+  
+  case 512:
+    return predict_s5_HORZ_SPLIT(pixelFeatures);
+    free(pixelFeatures);
+    break;
+  
+  case 256:
+    return predict_s6_HORZ_SPLIT(pixelFeatures);
+    free(pixelFeatures);
+    break;
+  
+  default:
+    return 1;
+    break;
+  }
+}
+int features::predictVERTSPLIT (CodingStructure* cs)
+{
+  int block_size = int(cs->area.lheight()) * int(cs->area.lwidth());
+  float* pixelFeatures = getFeaturesRF(1);
+  switch (block_size)
+  {
+  /*case 16384:
+    return predict_s0_QT_SPLIT(pixelFeatures);
+    break;
+  
+  case 8192:
+    return predict_s1_VERT_SPLIT(pixelFeatures);
+    break;*/
+  
+  case 4096:
+    pixelFeatures = getFeaturesRF(2);
+    return predict_s2_VERT_SPLIT(pixelFeatures);
+    free(pixelFeatures);
+    break;
+  
+  case 2048:
+    return predict_s3_VERT_SPLIT(pixelFeatures);
+    free(pixelFeatures);
+    break;
+  
+  case 1024:
+    return predict_s4_VERT_SPLIT(pixelFeatures);
+    break;
+  
+  case 512:
+    return predict_s5_VERT_SPLIT(pixelFeatures);
+    free(pixelFeatures);
+    break;
+  
+  case 256:
+    return predict_s6_VERT_SPLIT(pixelFeatures);
+    free(pixelFeatures);
+    break;
+  
+  default:
+    return 1;
+    break;
+  }
 }
 
 double features::variance(int xTL, int yTL, int xBR, int yBR, int varSum)
@@ -722,7 +874,7 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
 {
   vector<double> quarters;
 
-  /*if(split == CU_QUAD_SPLIT)
+  if(split == CU_QUAD_SPLIT)
   {
     int maxHeight = (yBR - yTL + 1);
     int maxWidth  = (xBR - xTL + 1);
@@ -737,7 +889,6 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
     while(block != 0)
     {
       int quarterSum = 0;
-      cout << "xTL: " << quarter_xTL << "\tyTL: " << quarter_yTL << "\txBR: " << quarter_xBR << "\tyBR: " << quarter_yBR << endl;
       for(int i = quarter_yTL; i <= quarter_yBR; i++)
       {
         for(int j = quarter_xTL; j <= quarter_xBR; j++)
@@ -855,13 +1006,11 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
       quarters.push_back(ratioGrads);
     }
   }
-  */
+  
   if(split == CU_TRIH_SPLIT)
   {
     int maxHeight = (yBR - yTL + 1);
-    //int maxWidth  = (xBR - xTL + 1);
     int quarterHeight = maxHeight / 4;
-    //int quarterWidth  = maxWidth;
     int quarter_xTL = xTL;
     int quarter_yTL = yTL;
     int quarter_xBR = xBR;
@@ -908,9 +1057,7 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
 
   if(split == CU_TRIV_SPLIT)
   {
-    //int maxHeight = (yBR - yTL + 1);
     int maxWidth  = (xBR - xTL + 1);
-    //int quarterHeight = maxHeight;
     int quarterWidth  = maxWidth / 4;
     int quarter_xTL = xTL;
     int quarter_yTL = yTL;
@@ -956,5 +1103,4 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
     }
   }
   return quarters;
-
 }

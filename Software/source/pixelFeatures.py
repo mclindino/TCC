@@ -119,3 +119,13 @@ class pixelFeatures:
 							quartersFeatures[1][0], quartersFeatures[1][1], quartersFeatures[1][2], quartersFeatures[1][3], quartersFeatures[1][4], quartersFeatures[1][5],
 							quartersFeatures[2][0], quartersFeatures[2][1], quartersFeatures[2][2], quartersFeatures[2][3], quartersFeatures[2][4], quartersFeatures[2][5],
 							-1, -1, -1, -1, -1, -1]
+
+	def concatenateDataFrames(self, path1 = None, path2 = None):
+		splits = ['QT_SPLIT', 'BI_HORZ', 'BI_VERT', 'TRI_HORZ', 'TRI_VERT']
+
+		for split in splits:
+			dfVTM = pd.read_csv('../datasets/all/' + path1 + '.csv')
+			dfPixel = pd.read_csv('../datasets/all/' + path2 + '_' + split + '_PIXEL.csv')
+			dfVTM = dfVTM[dfVTM['splitType'] == split]
+			df = pd.merge(dfVTM, dfPixel, on = ['topLeft_x', 'topLeft_y','bottomRight_x','bottomRight_y','POC', 'CU_width', 'CU_height', 'videoname'])
+			df.to_csv('../datasets/' + split + '/' + path2 + '.csv', index = False)
