@@ -75,24 +75,24 @@ features::features(string m_videoName, int m_iQP, double m_iSourceWidth, double 
 
 void features::createFile()
 {
-  //file_features.open("features/dataset_" + videoName + "_" + to_string(qp) + "_features.csv", ios::app);
-  //file_target.open("target/dataset_" + videoName + "_" + to_string(qp) + "_target.csv", ios::app);
-  file_pixel.open("pixel/dataset_" + videoName + "_" + to_string(qp) + "_pixel.csv", ios::app);
+  file_features.open("features/dataset_" + videoName + "_" + to_string(qp) + "_features.csv", ios::app);
+  file_target.open("target/dataset_" + videoName + "_" + to_string(qp) + "_target.csv", ios::app);
+  //file_pixel.open("pixel/dataset_" + videoName + "_" + to_string(qp) + "_pixel.csv", ios::app);
 
-  /*file_features << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,"
+  file_features << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,"
                 << "depth,qtdepth,mtdepth,qp,predMode,skip,mmvdSkip,affine,affineType,colorTransform,geoFlag,bdpcmMode,"
                 << "bdpcmModeChroma,imv,rootCbf,mipFlag,modeType,modeTypeSeries,splitSeries,cost,dist,fracBits,baseQP,prevQP,"
                 << "currQP,lumaCost,POC,opts,maxCostAllowed,tlMaxQTDepth,tMaxQTDepth,trMaxQTDepth,lMaxQTDepth,previousMaxQTDepth,averageQTDepth,modeQTDepth,highestQTDepth,"
                 << "tlMaxMTDepth,tMaxMTDepth,trMaxMTDepth,lMaxMDepth,previousMaxMTDepth,averageMTDepth,modeMTDepth,highestMTDepth,interIMVRDCost,"
-                << "interRDCost,affineMergeRDCost,cachedResultRDCost,mergeRDCost,mergeGeoRDCost,intraRDCost,splitType" << endl; */
+                << "interRDCost,affineMergeRDCost,cachedResultRDCost,mergeRDCost,mergeGeoRDCost,intraRDCost,splitType" << endl;
 
-  file_pixel << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,split,"
+  /*file_pixel << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,split,"
              << "variance,mean,gradientH,gradientV,ratioGrad,sum,quarter1Var,quarter1Mean,quarter1GradH,quarter1GradV,quarter1RatioGrad,"
              << "quarter2Var,quarter2Mean,quarter2GradH,quarter2GradV,quarter2RatioGrad,quarter3Var,quarter3Mean,quarter3GradH,quarter3GradV,quarter3RatioGrad,"
-             << "quarter4Var,quarter4Mean,quarter4GradH,quarter4GradV,quarter4RatioGrad" << endl;
+             << "quarter4Var,quarter4Mean,quarter4GradH,quarter4GradV,quarter4RatioGrad" << endl;*/
   
-  //file_target << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
-  //            << "PartSplit,RDCost" << endl;
+  file_target << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
+             << "splitType,RDCost" << endl;
 }
 
 

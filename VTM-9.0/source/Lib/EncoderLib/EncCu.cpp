@@ -872,8 +872,8 @@ void EncCu::xCompressCU( CodingStructure*& tempCS, CodingStructure*& bestCS, Par
           if (partitioner.chType == CHANNEL_TYPE_LUMA)
           {
             for(int i = 0; i < bestCS->cus.size(); i++)
-              //features::extract_features(bestCS->cus[i], bestCS, currTestMode);
-              features::extractTarget(bestCS, bestCS->cus[i], currTestMode, true);
+              features::extractFeatures(bestCS->cus[i], bestCS, currTestMode);
+              //features::extractTarget(bestCS, bestCS->cus[i], currTestMode, true);
           }
         
         #endif

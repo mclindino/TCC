@@ -4,6 +4,10 @@ import time
 from threading import Thread
 
 def main():
+	cmd = 'rm -R features; rm -R target; mkdir features; mkdir target; ./make.sh'
+	system(cmd)
+
+
 	video = 'BasketballPass'
 	qps = ['22', '27', '32', '37']
 
@@ -46,7 +50,7 @@ class Th(Thread):
 	def run(self):
 
 		video_path = {
-			'BasketballPass': 					  ['/home/lindino/Documentos/(YUV) Videos/BasketballPass.yuv', 5],
+			'BasketballPass': 					  ['/home/lindino/Documentos/(YUV) Videos/BasketballPass.yuv', 16],
 		}
 
 		in_file = video_path[self.video][0]
@@ -58,7 +62,7 @@ class Th(Thread):
 		bsFile = "video_bin/" + self.video + "_" + self.qp + ".bin"
 
 		cmd = "taskset -c " + self.core + " ./bin/EncoderAppStaticd -c cfg/" + encoderCfgFile + " -c cfg/per-sequence/" + self.video + ".cfg --FramesToBeEncoded=" + in_frames + " --QP=" + self.qp + " --SIMD=SCALAR --VideoName=" + self.video + " --BitstreamFile=" + bsFile + " > " + outFile
-		print (cmd)
+		#print (cmd)
 		system(cmd)
 
 
