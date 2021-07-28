@@ -8,39 +8,15 @@
 #include <string.h>
 
 //Modelos
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s0_QT_SPLIT.h"
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s0_HORZ_SPLIT.h"
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s0_VERT_SPLIT.h"
-
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s1_QT_SPLIT.h"
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s1_HORZ_SPLIT.h"
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s1_VERT_SPLIT.h"
-
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s2_QT_SPLIT.h"
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s2_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s2_VERT_SPLIT.h"
-
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s3_QT_SPLIT.h"
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s3_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s3_VERT_SPLIT.h"
-
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s4_QT_SPLIT.h"
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s4_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s4_VERT_SPLIT.h"
-
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s5_QT_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s5_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s5_VERT_SPLIT.h"
-
-//#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s6_QT_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s6_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s6_VERT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s0_QT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s0_HORZ_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s0_VERT_SPLIT.h"
 
 using namespace std;
 
-#define DATASET_EXTRACTION_FEATURES 0
-#define DATASET_EXTRACTION_TARGET 0
-#define DATASET_PIXEL 1
+#define DATASET_EXTRACTION_FEATURES 1
+#define DATASET_EXTRACTION_TARGET 1
+#define DATASET_PIXEL 0
 
 enum DepthCTUFrame
 {
@@ -96,47 +72,7 @@ private:
 
     /* Auxiliar Variables for Pixel Features */
     static unsigned short CTUPixel[128][128];
-    static int            rf_paramQP;
-    static int            rf_CU_width;
-    static int            rf_CU_height;
-    static int            rf_topLeft_x;
-    static int            rf_topLeft_y;
-    static int            rf_bottomRight_x;
-    static int            rf_bottomRight_y;
-    static int            rf_POC;
-    static int            rf_qtdepth;
-    static int            rf_mtdepth;
-    static double         rf_variance;
-    static double         rf_mean;
-    static unsigned short rf_gradientH;
-    static unsigned short rf_gradientV;
-    static double         rf_ratioGrad;
-    static int            rf_sum;
-    static double         rf_quarter1Var;
-    static double         rf_quarter1Mean;
-    static unsigned short rf_quarter1GradH;
-    static unsigned short rf_quarter1GradV;
-    static double         rf_quarter1RatioGrad;
-    static int            rf_quarter1Sum;
-    static double         rf_quarter2Var;
-    static double         rf_quarter2Mean;
-    static unsigned short rf_quarter2GradH;
-    static unsigned short rf_quarter2GradV;
-    static double         rf_quarter2RatioGrad;
-    static int            rf_quarter2Sum;
-    static double         rf_quarter3Var;
-    static double         rf_quarter3Mean;
-    static unsigned short rf_quarter3GradH;
-    static unsigned short rf_quarter3GradV;
-    static double         rf_quarter3RatioGrad;
-    static int            rf_quarter3Sum;
-    static double         rf_quarter4Var;
-    static double         rf_quarter4Mean;
-    static unsigned short rf_quarter4GradH;
-    static unsigned short rf_quarter4GradV;
-    static double         rf_quarter4RatioGrad;
-    static int            rf_quarter4Sum;
-		
+    static float rf_features[42];		
 
 public:
 

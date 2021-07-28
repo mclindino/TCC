@@ -15,13 +15,15 @@ class datasetCleaner:
 		df1 = pd.read_csv('../datasets/' + path1 + '/' + div + '.csv')
 
 		if path2 == None:
-			self.df = df1.drop(columns = ['videoname', 'splitType', 'cost', 'RDCost'])
+			self.df = df1.drop(columns = ['videoname', 'splitType'])
 		
 		else:
 			df2 = pd.read_csv('../datasets/' + path2 + '/' + div + '.csv')
 			dfBoth = pd.concat([df1, df2])
 			dfBoth.reset_index(inplace = True, drop = True)
-			self.df = dfBoth.drop(columns = ['videoname', 'splitType', 'cost', 'RDCost'])
+			self.df = dfBoth.drop(columns = ['videoname', 'splitType'])
+			#self.df.replace([np.inf, -np.inf], -1, inplace=True)
+			self.df = self.df.query('POC > 0')
 
 		self.X = 0
 		self.y = 0
@@ -35,7 +37,7 @@ class datasetCleaner:
 	def duplicatedFeatures(self):
 
 		self.X = self.df.drop(columns = ['target'])
-		self.y = self.df['target']
+		self.y = self.df['target'].astype(int)
 
 		constant_filter = VarianceThreshold(threshold = 0.01)
 		constant_filter.fit(self.X)
@@ -65,8 +67,8 @@ class datasetCleaner:
 		forest_importances.plot.bar(yerr = std, figsize = (20,8));
 
 	def fastTraining(self, returnMethod = False, div = None, split = None):
-		oversample = SMOTE()
-		self.X, self.y = oversample.fit_resample(self.X, self.y)
+		#oversample = SMOTE()
+		#self.X, self.y = oversample.fit_resample(self.X, self.y)
 		forest = RandomForestClassifier(n_estimators = 10, random_state = 0)
 		
 		if returnMethod:
@@ -109,5 +111,5 @@ class datasetCleaner:
 			features_file.close()
 
 		else:
-			scores = cross_val_score(forest, self.X, self.y, cv = 10, n_jobs = 2)
+			scores = cross_val_score(forest, self.X, self.y, cv = 5, n_jobs = 2)
 			return scores.mean()

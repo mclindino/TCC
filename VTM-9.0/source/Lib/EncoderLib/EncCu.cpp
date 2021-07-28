@@ -1227,24 +1227,25 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   /*lindino*/
   #if DATASET_EXTRACTION_FEATURES
 
-    for(int i = 0; i < bestCS->cus.size(); i++)
-    {
-      if (partitioner.chType == CHANNEL_TYPE_LUMA) features::extractFeatures(bestCS->cus[i], bestCS, encTestMode);
-    }
+    //for(int i = 0; i < bestCS->cus.size(); i++)
+    //{
+      if (partitioner.chType == CHANNEL_TYPE_LUMA) features::extractCUPixel(bestCS, split, &partitioner); //features::extractFeatures(bestCS->cus[i], bestCS, encTestMode);
+    //}
   
   #endif
-
+  //cout << encTestMode.type << endl;
   //Lindino
   #if DATASET_PIXEL
     clock_t Ticks[2];
     Ticks[0] = clock();
     int rf_control = 1;
-    if(partitioner.chType == CHANNEL_TYPE_LUMA)
+    
+    if((partitioner.chType == CHANNEL_TYPE_LUMA) && (bestCS->picture->getPOC() != 0))
     {
       features::extractCUPixel(bestCS, split, &partitioner);
       if (split == CU_QUAD_SPLIT)
       {
-        rf_control = features::predictQUADSPLIT(bestCS);
+        //rf_control = features::predictQUADSPLIT(bestCS);
       }
       else if ((split == CU_HORZ_SPLIT) || (split == CU_TRIH_SPLIT))
       {
@@ -1598,16 +1599,6 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
 
   // RD check for sub partitioned coding structure.
   xCheckBestMode( tempCS, bestCS, partitioner, encTestMode );
-  
-  /*lindino*/
-  #if DATASET_EXTRACTION_TARGET
-
-    for(int i = 0; i < bestCS->cus.size(); i++)
-    {
-      if (partitioner.chType == CHANNEL_TYPE_LUMA) features::extractTarget(bestCS, bestCS->cus[i], encTestMode);
-    }
-
-  #endif
 
   if (isAffMVInfoSaved)
     m_pcInterSearch->addAffMVInfo(tmpMVInfo);
@@ -1623,6 +1614,16 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   tempCS->releaseIntermediateData();
 
   tempCS->prevQP[partitioner.chType] = oldPrevQp;
+
+  /*lindino*/
+  #if DATASET_EXTRACTION_TARGET
+
+    for(int i = 0; i < bestCS->cus.size(); i++)
+    {
+      if (partitioner.chType == CHANNEL_TYPE_LUMA) features::extractTarget(bestCS, bestCS->cus[i], encTestMode);
+    }
+
+  #endif
 }
 
 bool EncCu::xCheckRDCostIntra(CodingStructure *&tempCS, CodingStructure *&bestCS, Partitioner &partitioner, const EncTestMode& encTestMode, bool adaptiveColorTrans)

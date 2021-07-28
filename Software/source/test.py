@@ -4,13 +4,13 @@ import sys
 from os import system
 
 def main():
-	types = ['s0', 's1', 's2', 's3', 's4', 's5', 's6']
+	types = ['s0']#, 's1', 's2', 's3', 's4', 's5', 's6']
 	pf = pixelFeatures('1', 1, 1, 1, 1)
 
 	for t in types:
 		
 		print('\nDATASET: {}'.format(t))
-		#pf.concatenateDataFrames(path1 = 'VTM', path2 = t)
+		#pf.concatenateDataFrames(path1 = 'VTM_MinMin', path2 = t)
 		cleaner = datasetCleaner(path1 = 'QT_SPLIT', path2 = None, div = t)
 
 		if cleaner.verifyClasses():
