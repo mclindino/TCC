@@ -8,15 +8,15 @@
 #include <string.h>
 
 //Modelos
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s0_QT_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s0_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/v3.0/VTM-9.0/source/Lib/EncoderLib/s0_VERT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_QT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_HORZ_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_VERT_SPLIT.h"
 
 using namespace std;
 
-#define DATASET_EXTRACTION_FEATURES 1
-#define DATASET_EXTRACTION_TARGET 1
-#define DATASET_PIXEL 0
+#define DATASET_EXTRACTION_FEATURES 0
+#define DATASET_EXTRACTION_TARGET 0
+#define DATASET_PIXEL 1
 
 enum DepthCTUFrame
 {
@@ -72,7 +72,7 @@ private:
 
     /* Auxiliar Variables for Pixel Features */
     static unsigned short CTUPixel[128][128];
-    static float rf_features[42];		
+    static float rf_features[36];		
 
 public:
 
@@ -97,7 +97,6 @@ public:
     static double  variance                         (int xTL, int yTL, int xBR, int yBR, int varSum);
     static vector<unsigned short>  gradients        (int xTL, int yTL, int xBR, int yBR);
     static vector<double>  quarterCU                (int xTL, int yTL, int xBR, int yBR, PartSplit split);
-    static string enumToString                      (int value);
     static int predictQUADSPLIT                     (CodingStructure* cs);
     static int predictHORZSPLIT                     (CodingStructure* cs);
     static int predictVERTSPLIT                     (CodingStructure* cs);

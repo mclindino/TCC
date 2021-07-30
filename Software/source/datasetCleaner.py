@@ -36,7 +36,7 @@ class datasetCleaner:
 		
 	def duplicatedFeatures(self):
 
-		self.X = self.df.drop(columns = ['target'])
+		self.X = self.df.drop(columns = ['target']).astype(float)
 		self.y = self.df['target'].astype(int)
 
 		constant_filter = VarianceThreshold(threshold = 0.01)

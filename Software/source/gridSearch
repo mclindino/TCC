@@ -1,0 +1,4 @@
+Dataset S0:
+	QT_SPLIT: 
+		SelectKBest = 0.2
+		max_depth = 10

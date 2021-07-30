@@ -29,7 +29,7 @@ double   features::mergeRDCost;
 double   features::mergeGeoRDCost;
 double   features::intraRDCost;
 unsigned short features::CTUPixel[128][128];
-float features::rf_features[42];
+float features::rf_features[36];
 
 features::features(string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight)
 { 
@@ -70,7 +70,7 @@ features::features(string m_videoName, int m_iQP, double m_iSourceWidth, double 
   mergeGeoRDCost        = MAX_DOUBLE;
   intraRDCost           = MAX_DOUBLE;
 
-  createFile();
+  //createFile();
   CTUFrame              = initCTUFrame();
 }
 
@@ -375,32 +375,6 @@ void features::setIntraRDCost(double m_intra)
   intraRDCost = (intraRDCost > m_intra) ? m_intra : intraRDCost;
 }
 
-string features::enumToString(int value)
-{
-  switch (value)
-  {
-  case 1:
-    return "QUAD_SPLIT";
-    break;
-  case 2:
-    return "BI_HORZ_SPLIT";
-    break;
-  case 3:
-    return "BI_VERT_SPLIT";
-    break;
-  case 4:
-    return "TRI_HORZ_SPLIT";
-    break;
-  case 5:
-    return "TRI_VERT_SPLIT";
-    break;
-
-  default:
-    return "ERROR";
-    break;
-  }
-}
-
 void features::extractCUPixel(CodingStructure* cs, PartSplit split, Partitioner* partitioner)
 {
   int xTL = cs->area.Y().topLeft().x;
@@ -432,133 +406,22 @@ void features::extractCUPixel(CodingStructure* cs, PartSplit split, Partitioner*
   vector<unsigned short> grads = gradients(0, 0, pixelWidth-1, pixelHeight-1);
   double ratioGrads =   (grads[1] != 0) ? (double) grads[0] / (double) grads[1] : -1;
   vector<double> quarters = quarterCU(0, 0, pixelWidth-1, pixelHeight-1, split);
-
-  rf_features[0] = frameWidth;
-  rf_features[1] = frameHeight;
-  rf_features[2] = qp;
-  rf_features[3] = int(cs->area.lwidth());
-  rf_features[4] = int(cs->area.lheight());
-  rf_features[5] = xTL;
-  rf_features[6] = yTL;
-  rf_features[7] = xBR;
-  rf_features[8] = yBR;
-  rf_features[9] = int(cs->picture->getPOC());
-  rf_features[10] = int(partitioner->currQtDepth);
-  rf_features[11] = int(partitioner->currMtDepth);
-  rf_features[12] = var;
-  rf_features[13] = mean;
-  rf_features[14] = grads[0];
-  rf_features[15] = grads[1];
-  rf_features[16] = ratioGrads;
-  rf_features[17] = sum; 
-  rf_features[18] = quarters[0];
-  rf_features[19] = quarters[1];
-  rf_features[20] = quarters[2];
-  rf_features[21] = quarters[3];
-  rf_features[22] = quarters[4];
-  rf_features[23] = quarters[5];
-  rf_features[24] = quarters[6];
-  rf_features[25] = quarters[7];
-  rf_features[26] = quarters[8];
-  rf_features[27] = quarters[9];
-  rf_features[28] = quarters[10];
-  rf_features[29] = quarters[11];
-
+  
   if(split == CU_QUAD_SPLIT)
   {
+    double HIVar = abs(quarters[0] - quarters[6]) + abs(quarters[12] - quarters[18]);
+    double HIMean = abs(quarters[1] - quarters[7]) + abs(quarters[13] - quarters[19]);
+    double HIRatio = abs(quarters[4] - quarters[10]) + abs(quarters[16] - quarters[22]);
 
-    rf_features[30] = quarters[12];
-    rf_features[31] = quarters[13];
-    rf_features[32] = quarters[14];
-    rf_features[33] = quarters[15];
-    rf_features[34] = quarters[16];
-    rf_features[35] = quarters[17];
-    rf_features[36] = quarters[18];
-    rf_features[37] = quarters[19];
-    rf_features[38] = quarters[20];
-    rf_features[39] = quarters[21];
-    rf_features[40] = quarters[22]; 
-    rf_features[41] = quarters[23];
+    double VIVar = abs(quarters[0] - quarters[12]) + abs(quarters[6] - quarters[18]);
+    double VIMean = abs(quarters[1] - quarters[13]) + abs(quarters[7] - quarters[19]);
+    double VIRatio = abs(quarters[4] - quarters[16]) + abs(quarters[10] - quarters[22]);
 
+    double DiffInconsVar = abs(HIVar - VIVar);
+    double DiffInconsMean = abs(HIMean - VIMean);
+    double DiffInconsRatio = abs(HIRatio - VIRatio);
   }
-  if((split == CU_VERT_SPLIT) || (split == CU_HORZ_SPLIT))
-  {
-    rf_features[30] = -1;
-    rf_features[31] = -1;
-    rf_features[32] = -1;
-    rf_features[33] = -1;
-    rf_features[34] = -1;
-    rf_features[35] = -1;
-    rf_features[36] = -1;
-    rf_features[37] = -1;
-    rf_features[38] = -1;
-    rf_features[39] = -1;
-    rf_features[40] = -1;
-    rf_features[41] = -1;
-
-  }
-  if((split == CU_TRIH_SPLIT) || (split == CU_TRIV_SPLIT))
-  {
-    rf_features[30] = quarters[12];
-    rf_features[31] = quarters[13];
-    rf_features[32] = quarters[14];
-    rf_features[33] = quarters[15];
-    rf_features[34] = quarters[16];
-    rf_features[35] = quarters[17];
-    rf_features[36] = -1;
-    rf_features[37] = -1;
-    rf_features[38] = -1;
-    rf_features[39] = -1;
-    rf_features[40] = -1; 
-    rf_features[41] = -1;
-  }
-
-  file_features <<
-  videoName << "," <<
-  cs->cost << "," << 
-  rf_features[0] << "," <<
-  rf_features[1] << "," <<
-  rf_features[2] << "," <<
-  rf_features[3] << "," <<
-  rf_features[4] << "," <<
-  rf_features[5] << "," <<
-  rf_features[6] << "," <<
-  rf_features[7] << "," <<
-  rf_features[8] << "," <<
-  rf_features[9] << "," <<
-  rf_features[10] << "," <<
-  rf_features[11] << "," <<
-  split << "," <<
-  rf_features[12] << "," <<
-  rf_features[13] << "," <<
-  rf_features[14] << "," <<
-  rf_features[15] << "," <<
-  rf_features[16] << "," <<
-  rf_features[17] << "," <<
-  rf_features[18] << "," <<
-  rf_features[19] << "," <<
-  rf_features[20] << "," <<
-  rf_features[21] << "," <<
-  rf_features[22] << "," <<
-  rf_features[23] << "," <<
-  rf_features[24] << "," <<
-  rf_features[25] << "," <<
-  rf_features[26] << "," <<
-  rf_features[27] << "," <<
-  rf_features[28] << "," <<
-  rf_features[29] << "," <<
-  rf_features[30] << "," <<
-  rf_features[31] << "," <<
-  rf_features[32] << "," <<
-  rf_features[33] << "," <<
-  rf_features[34] << "," <<
-  rf_features[35] << "," <<
-  rf_features[36] << "," <<
-  rf_features[37] << "," <<
-  rf_features[38] << "," <<
-  rf_features[39] << "," <<
-  rf_features[40] << "," << 
-  rf_features[41] << endl;
+  
 }
 
 int features::predictQUADSPLIT (CodingStructure* cs)
@@ -727,7 +590,7 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
       int n = (quarterHeight * quarterWidth);
       double mean = (double) quarterSum / (double) n;
       vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
-      double ratioGrads = (double) grads[0] / (double) grads[1];
+      double ratioGrads = (grads[1] != 0) ? (double) grads[0] / (double) grads[1] : -1;
 
       quarter_xBR += quarterWidth;
       quarter_xTL += quarterWidth;
@@ -777,7 +640,7 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
       int n = (quarterHeight * quarterWidth);
       double mean = (double) quarterSum / (double) n;
       vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
-      double ratioGrads = (double) grads[0] / (double) grads[1];
+      double ratioGrads = (grads[1] != 0) ? (double) grads[0] / (double) grads[1] : -1;
 
       quarter_yTL += quarterHeight;
       quarter_yBR += quarterHeight;
@@ -820,7 +683,7 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
       int n = (quarterHeight * quarterWidth);
       double mean = (double) quarterSum / (double) n;
       vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
-      double ratioGrads = (double) grads[0] / (double) grads[1];
+      double ratioGrads = (grads[1] != 0) ? (double) grads[0] / (double) grads[1] : -1;
 
       quarter_xTL += quarterWidth;
       quarter_xBR += quarterWidth;
@@ -861,7 +724,7 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
       int n = (quarter_yBR - quarter_yTL + 1) * (quarter_xBR - quarter_xTL + 1);
       double mean = (double) quarterSum / (double) n;
       vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
-      double ratioGrads = (double) grads[0] / (double) grads[1];
+      double ratioGrads = (grads[1] != 0) ? (double) grads[0] / (double) grads[1] : -1;
 
       if(block == 3)
       {
@@ -910,7 +773,7 @@ vector<double> features::quarterCU(int xTL, int yTL, int xBR, int yBR, PartSplit
       int n = (quarter_yBR - quarter_yTL + 1) * (quarter_xBR - quarter_xTL + 1);
       double mean = (double) quarterSum / (double) n;
       vector<unsigned short> grads = gradients(quarter_xTL, quarter_yTL, quarter_xBR, quarter_yBR);
-      double ratioGrads = (double) grads[0] / (double) grads[1];
+      double ratioGrads = (grads[1] != 0) ? (double) grads[0] / (double) grads[1] : -1;
 
       if(block == 3)
       {
