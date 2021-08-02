@@ -14,9 +14,9 @@
 
 using namespace std;
 
-#define DATASET_EXTRACTION_FEATURES 0
-#define DATASET_EXTRACTION_TARGET 0
-#define DATASET_PIXEL 1
+#define DATASET_EXTRACTION_FEATURES 1
+#define DATASET_EXTRACTION_TARGET 1
+#define DATASET_PIXEL 0
 
 enum DepthCTUFrame
 {
@@ -72,7 +72,57 @@ private:
 
     /* Auxiliar Variables for Pixel Features */
     static unsigned short CTUPixel[128][128];
-    static float rf_features[36];		
+    static double f_CU_width;
+    static double f_CU_height;
+    static double f_topLeft_x;
+    static double f_topLeft_y;
+    static double f_bottomRight_x;
+    static double f_bottomRight_y;
+    static double f_POC;
+    static double f_qtdepth;
+    static double f_mtdepth;
+    static double f_var;
+    static double f_mean;
+    static double f_gradientH;
+    static double f_gradientV;
+    static double f_ratioGrad;
+    static double f_sum;
+    static double f_quarter1Var;
+    static double f_quarter1Mean;
+    static double f_quarter1GradH;
+    static double f_quarter1GradV;
+    static double f_quarter1RatioGrad;
+    static double f_quarter1Sum;
+    static double f_quarter2Var;
+    static double f_quarter2Mean;
+    static double f_quarter2GradH;
+    static double f_quarter2GradV;
+    static double f_quarter2RatioGrad;
+    static double f_quarter2Sum;
+    static double f_quarter3Var;
+    static double f_quarter3Mean;
+    static double f_quarter3GradH;
+    static double f_quarter3GradV;
+    static double f_quarter3RatioGrad;
+    static double f_quarter3Sum;
+    static double f_quarter4Var;
+    static double f_quarter4Mean;
+    static double f_quarter4GradH;
+    static double f_quarter4GradV;
+    static double f_quarter4RatioGrad;
+    static double f_quarter4Sum;
+    static double f_HIVar;
+    static double f_HIMean;
+    static double f_HIRatio;
+    static double f_VIVar;
+    static double f_VIMean;
+    static double f_VIRatio;
+    static double f_DiffVar;
+    static double f_DiffMean;
+    static double f_DiffRatio;
+    static double f_HIVIVar;
+    static double f_HIVIMean;
+    static double f_HIVIRatio;	
 
 public:
 
@@ -100,6 +150,6 @@ public:
     static int predictQUADSPLIT                     (CodingStructure* cs);
     static int predictHORZSPLIT                     (CodingStructure* cs);
     static int predictVERTSPLIT                     (CodingStructure* cs);
-    static float* getFeaturesRF                     (int type);
-    static void pixelFeaturesZero                   ();
+    static float* selectFeatures                    (int type);
+    static void fZeros                              ();
 };

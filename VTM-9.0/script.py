@@ -15,7 +15,7 @@ def main():
         #        'Vidyo4', 'Dark', 'NetflixDinnerScene', 'KristenAndSara', 'Netflix_DrivingPOV'
         #]
 
-        videos = ['Vidyo4', 'Dark', 'NetflixDinnerScene', 'KristenAndSara', 'Netflix_DrivingPOV']
+        videos = ['Touchdown_pass', 'Jockey_1080p', 'Beauty_1080p', 'RushFieldCuts', 'Netflix_TunnelFlag']
 
         videos.reverse()
 
@@ -65,11 +65,11 @@ class Th(Thread):
                         'BuildingHall':           ['/data/videos/4k_jvet/BuildingHall2_3840x2160_50fps_10bit_420.yuv', 8],
                         'ToddlerFountain':        ['/data/videos/4k_jvet/ToddlerFountain_4096x2160_60fps_10bit_420_jvet.yuv', 8],
                         
-                        'Touchdown_pass':         ['/home/matheuslin/videos/TouchdownPass_1080p_60f.yuv', 16],
-                        'Jockey_1080p':           ['/data/videos/1080p_UVG/Jockey_1920x1080_120fps_420_8bit_YUV.yuv', 16],
-                        'Beauty_1080p':           ['/home/matheuslin/videos/Beauty_1920x1080_120fps_420_8bit_YUV.yuv', 16],
-                        'RushFieldCuts':          ['/home/matheuslin/videos/rush_field_cuts_1080p_60f.yuv', 16],
-                        'Netflix_TunnelFlag':     ['/home/matheuslin/videos/NetflixTunnelFlag_1920x1080_60fps_8bit_420_60f.yuv', 16],
+                        'Touchdown_pass':         ['/home/lindino/Documentos/rawVideos/TouchdownPass_1080p_60f.yuv', 8],
+                        'Jockey_1080p':           ['/home/lindino/Documentos/rawVideos/Jockey_1920x1080_120fps_420_8bit_YUV.yuv', 8],
+                        'Beauty_1080p':           ['/home/lindino/Documentos/rawVideos/Beauty_1920x1080_120fps_420_8bit_YUV.yuv', 8],
+                        'RushFieldCuts':          ['/home/lindino/Documentos/rawVideos/rush_field_cuts_1080p_60f.yuv', 8],
+                        'Netflix_TunnelFlag':     ['/home/lindino/Documentos/rawVideos/Treinamento/NetflixTunnelFlag_1920x1080_60fps_8bit_420_60f.yuv', 8],
                         
                         'Vidyo4':                 ['/home/lindino/Documentos/rawVideos/Treinamento/Vidyo4_1280x720_60.yuv', 16],
                         'Dark':                   ['/home/lindino/Documentos/rawVideos/Treinamento/dark720p_120f.yuv', 16],

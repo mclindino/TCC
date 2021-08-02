@@ -8,6 +8,8 @@ simplefilter(action='ignore', category=FutureWarning)
 from sklearn_porter import Porter
 import fileinput
 from imblearn.over_sampling import SMOTE
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_classif
 
 class datasetCleaner:
 
@@ -36,7 +38,7 @@ class datasetCleaner:
 		
 	def duplicatedFeatures(self):
 
-		self.X = self.df.drop(columns = ['target']).astype(float)
+		self.X = self.df.drop(columns = ['target'])
 		self.y = self.df['target'].astype(int)
 
 		constant_filter = VarianceThreshold(threshold = 0.01)
@@ -69,7 +71,9 @@ class datasetCleaner:
 	def fastTraining(self, returnMethod = False, div = None, split = None):
 		#oversample = SMOTE()
 		#self.X, self.y = oversample.fit_resample(self.X, self.y)
-		forest = RandomForestClassifier(n_estimators = 10, random_state = 0)
+		fs = SelectKBest(score_func = f_classif, k = round((self.X.shape[1]*0.2)))
+		X_selected = fs.fit_transform(self.X, self.y)
+		forest = RandomForestClassifier(n_estimators = 10, max_depth = 10, random_state = 0)
 		
 		if returnMethod:
 			forest.fit(self.X, self.y)
@@ -103,7 +107,8 @@ class datasetCleaner:
 			library_file.close()
 
 
-			features = self.X.columns
+			#features = self.X.columns
+			features = self.X.columns[fs.get_support()]
 			features_file = open('../datasets/models/' + split + '/features_' + div + '_' + split + '.txt', 'w')
 			features_file.write('float features_' + div + '_' + split + '[' + str(features.shape[0]) + '];\n')
 			for f in range(features.shape[0]):
@@ -111,5 +116,5 @@ class datasetCleaner:
 			features_file.close()
 
 		else:
-			scores = cross_val_score(forest, self.X, self.y, cv = 5, n_jobs = 2)
+			scores = cross_val_score(forest, X_selected, self.y, cv = 5, n_jobs = -1)
 			return scores.mean()
