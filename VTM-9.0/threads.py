@@ -4,9 +4,8 @@ import time
 from threading import Thread
 
 def main():
-	cmd = './make.sh' #'rm -R features; rm -R target; mkdir features; mkdir target; ./make.sh'
+	cmd = 'rm -R features; rm -R target; mkdir features; mkdir target; ./make.sh'
 	system(cmd)
-
 
 	video = 'BasketballPass'
 	qps = ['22', '27', '32', '37']
@@ -50,7 +49,7 @@ class Th(Thread):
 	def run(self):
 
 		video_path = {
-			'BasketballPass': 					  ['/home/lindino/Documentos/rawVideos/BasketballPass_416x240_50.yuv', 6],
+			'BasketballPass': 					  ['/home/lindino/Documentos/rawVideos/BasketballPass_416x240_50.yuv', 8],
 		}
 
 		in_file = video_path[self.video][0]
@@ -58,8 +57,8 @@ class Th(Thread):
 		encoderCfgFile = "encoder_randomaccess_vtm.cfg"
 
 
-		outFile = "out_VTM/" + self.video + "_" + self.qp + "_pixel.txt"
-		bsFile = "video_bin/" + self.video + "_" + self.qp + ".bin"
+		outFile = "out_VTM/" + self.video + "_" + self.qp + "_features.txt"
+		bsFile = "video_bin/" + self.video + "_" + self.qp + "_features.bin"
 
 		cmd = "taskset -c " + self.core + " ./bin/EncoderAppStaticd -c cfg/" + encoderCfgFile + " -c cfg/per-sequence/" + self.video + ".cfg --FramesToBeEncoded=" + in_frames + " --QP=" + self.qp + " --SIMD=SCALAR --InputFile=" + in_file + " --VideoName=" + self.video + " --BitstreamFile=" + bsFile + " > " + outFile
 		#print (cmd)

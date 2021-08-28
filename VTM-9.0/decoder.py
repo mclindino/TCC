@@ -23,7 +23,7 @@ def main():
 	print(yellow + 'Compilando o codigo...' + reset)
 	os.system('./make.sh')
 
-	csv_names = args.videoname + '_' + args.qp + '_Sem'
+	csv_names = args.videoname + '_' + args.qp + '_normal'
 	print('Decodificando video ' + yellow + args.videoname + reset + ' QP ' + yellow + args.qp + reset)
 	decoder = './bin/DecoderAppStaticd -b ' + args.binary + csv_names + '.bin -o ' + args.videoname + '.yuv'
 	

@@ -15,7 +15,7 @@ def main():
 	parser.add_argument('--fileOut', '-f', help='Nome do arquivo', default='Teste')
 	parser.add_argument('--thread', '-t', help='Thread especifica', default='2', type=str)
 	parser.add_argument('--compile', '-c', help='Compila o codigo', default=True)
-	parser.add_argument('--frames', '-gop', help='Frames a serem codificados', default='4')
+	parser.add_argument('--frames', '-gop', help='Frames a serem codificados', default='8')
 
 	args = parser.parse_args()
 
@@ -30,13 +30,13 @@ def main():
 		os.system('./make.sh')
 
 	for q in qps:
+		in_file = '/home/lindino/Documentos/rawVideos/BasketballPass_416x240_50.yuv'
+		cmd = "taskset -c " + args.thread  + " ./bin/EncoderAppStaticd -c cfg/encoder_randomaccess_vtm.cfg -c cfg/per-sequence/" + args.videoname + ".cfg --FramesToBeEncoded=" + args.frames + " --QP=" + q + \
+			  " --SIMD=SCALAR --InputFile=" + in_file + " --VideoName=" + args.videoname + " --BitstreamFile=" + args.binary + args.videoname + "_" + q + "_" + args.fileOut  + " > " + args.tsResults + args.videoname + "_" + q + "_" + args.fileOut + ".txt"
 
-		exe = 'taskset -c ' + args.thread + ' ./bin/EncoderAppStaticd -c cfg/encoder_randomaccess_vtm.cfg -c cfg/per-sequence/' + args.videoname + '.cfg --VideoName=' + args.videoname  + \
-			  ' --FramesToBeEncoded=' + args.frames + '--SIMD=SCALAR --MaxMTTHierarchyDepth=0 --BitstreamFile=' + args.binary + args.videoname + "_" + q + "_" + args.fileOut + '.bin --QP=' + q + \
-			  " > " + args.tsResults + args.videoname + "_" + q + "_" + args.fileOut + ".txt"
 
 		print(yellow + 'Codificando o video ' + args.videoname + ' QP ' + q + reset)
-		os.system(exe)
+		os.system(cmd)
 	print(green + 'Done Simulation' + reset)
 	return 0
 

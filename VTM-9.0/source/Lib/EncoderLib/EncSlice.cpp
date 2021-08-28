@@ -1715,8 +1715,15 @@ void EncSlice::encodeCtus( Picture* pcPic, const bool bCompressEntireSlice, cons
     getAndStoreBlockStatistics(cs, ctuArea);
 #endif
 
-    /*lindino*/ 
-    features::ctuDepth(&cs);
+  //lindino
+  #if DATASET_EXTRACTION_TARGET
+  for(int i = 0; i < cs.cus.size(); i++)
+  {
+    if (cs.cus[i]->chType == CHANNEL_TYPE_LUMA) features::extractTarget(&cs, cs.cus[i]);//, encTestMode)
+  }
+  #endif
+  
+    //features::ctuDepth(&cs);
     
     pCABACWriter->resetBits();
     pCABACWriter->coding_tree_unit( cs, ctuArea, prevQP, ctuRsAddr, true, true );

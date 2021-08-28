@@ -12,6 +12,28 @@
 #include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_HORZ_SPLIT.h"
 #include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_VERT_SPLIT.h"
 
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s1_HORZ_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s1_VERT_SPLIT.h"
+
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_QT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_HORZ_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_VERT_SPLIT.h"
+
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s3_HORZ_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s3_VERT_SPLIT.h"
+
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_QT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_HORZ_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_VERT_SPLIT.h"
+
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s5_HORZ_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s5_VERT_SPLIT.h"
+
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_QT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_HORZ_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_VERT_SPLIT.h"
+
+
 using namespace std;
 
 #define DATASET_EXTRACTION_FEATURES 1
@@ -38,7 +60,8 @@ private:
     static ofstream file_features;
     static ofstream file_target;
     static ofstream file_pixel;
-
+    static ofstream check_file;
+    
     /*Extract from EncAppCfg*/
     static string  videoName;
     static double  frameWidth;
@@ -72,6 +95,7 @@ private:
 
     /* Auxiliar Variables for Pixel Features */
     static unsigned short CTUPixel[128][128];
+    static double f_paramQP;
     static double f_CU_width;
     static double f_CU_height;
     static double f_topLeft_x;
@@ -81,7 +105,7 @@ private:
     static double f_POC;
     static double f_qtdepth;
     static double f_mtdepth;
-    static double f_var;
+    static double f_variance;
     static double f_mean;
     static double f_gradientH;
     static double f_gradientV;
@@ -117,18 +141,18 @@ private:
     static double f_VIVar;
     static double f_VIMean;
     static double f_VIRatio;
-    static double f_DiffVar;
-    static double f_DiffMean;
-    static double f_DiffRatio;
+    static double f_DiffInconsVar;
+    static double f_DiffInconsMean;
+    static double f_DiffInconsRatio;
     static double f_HIVIVar;
     static double f_HIVIMean;
-    static double f_HIVIRatio;	
+    static double f_HIVIRatioGrad;	
 
 public:
 
     features                                        (string m_videoName, int m_iQP, double m_iSourceWidth, double m_iSourceHeight);
     static void    createFile                       ();
-    static void    extractFeatures                 (CodingUnit* cu, CodingStructure* cs, EncTestMode currTestMode);
+    static void    extractFeatures                  (CodingUnit* cu, CodingStructure* cs, EncTestMode currTestMode);
     static void    ctuDepth                         (CodingStructure* cs);
     static int***  initCTUFrame                     ();
     static void    updateCTUFrame                   ();
@@ -142,14 +166,14 @@ public:
     static void    setMergeRDCost                   (double m_merge);
     static void    setMergeGeoRDCost                (double m_geo);
     static void    setIntraRDCost                   (double m_intra);
-    static void    extractTarget                    (CodingStructure* cs, CodingUnit* cu, EncTestMode currTestMode);
-    static void    extractCUPixel                   (CodingStructure* cs, PartSplit split, Partitioner* partitioner);
+    static void    extractTarget                    (CodingStructure* cs, CodingUnit* cu); //, EncTestMode currTestMode);
+    static void    extractCUPixel                   (CodingStructure* cs, PartSplit split, Partitioner* partitioner);//, CodingUnit* cu);
     static double  variance                         (int xTL, int yTL, int xBR, int yBR, int varSum);
     static vector<unsigned short>  gradients        (int xTL, int yTL, int xBR, int yBR);
     static vector<double>  quarterCU                (int xTL, int yTL, int xBR, int yBR, PartSplit split);
-    static int predictQUADSPLIT                     (CodingStructure* cs);
-    static int predictHORZSPLIT                     (CodingStructure* cs);
-    static int predictVERTSPLIT                     (CodingStructure* cs);
+    //static int predictQUADSPLIT                     (Partitioner* partitioner);
+    static int predictHORZSPLIT                     (Partitioner* partitioner);
+    static int predictVERTSPLIT                     (Partitioner* partitioner, PartSplit split);
     static float* selectFeatures                    (int type);
     static void fZeros                              ();
 };

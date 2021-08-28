@@ -1226,41 +1226,39 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   
   /*lindino*/
   #if DATASET_EXTRACTION_FEATURES
+     if ((partitioner.chType == CHANNEL_TYPE_LUMA) && (tempCS->picture->getPOC() > 0)) features::extractCUPixel(tempCS, split, &partitioner);
+  #endif
 
-    //for(int i = 0; i < bestCS->cus.size(); i++)
-    //{
-      if (partitioner.chType == CHANNEL_TYPE_LUMA) features::extractCUPixel(bestCS, split, &partitioner); //features::extractFeatures(bestCS->cus[i], bestCS, encTestMode);
-    //}
-  
-  #endif 
   //Lindino
   #if DATASET_PIXEL
     clock_t Ticks[2];
     Ticks[0] = clock();
     int rf_control = 1;
     
-    if((partitioner.chType == CHANNEL_TYPE_LUMA) && (bestCS->picture->getPOC() != 0))
-    {
+    if((partitioner.chType == CHANNEL_TYPE_LUMA) && (bestCS->picture->getPOC() > 0))
+    { 
       features::extractCUPixel(bestCS, split, &partitioner);
-      if (split == CU_QUAD_SPLIT)
+      /*if (split == CU_QUAD_SPLIT)
       {
-        //rf_control = features::predictQUADSPLIT(bestCS);
+        rf_control = features::predictQUADSPLIT(bestCS);
       }
-      else if ((split == CU_HORZ_SPLIT) || (split == CU_TRIH_SPLIT))
+      else*/
+      if ((split == CU_HORZ_SPLIT) || (split == CU_TRIH_SPLIT))
       {
-        rf_control = features::predictHORZSPLIT(bestCS);
+        rf_control = features::predictHORZSPLIT(&partitioner);
       }
+      
       else if ((split == CU_VERT_SPLIT) || (split == CU_TRIV_SPLIT))
       {
-        rf_control = features::predictVERTSPLIT(bestCS);
+        rf_control = features::predictVERTSPLIT(&partitioner, split);
       }
     }
+    
     Ticks[1] = clock(); 
     extractionFeaturesTime += (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
-
+    
     if(!rf_control) return;
   #endif
-
 
   const ModeType modeTypeChild = partitioner.modeType;
 
@@ -1319,7 +1317,6 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
       tempCS->treeType = partitioner.treeType = TREE_D;
     }
   }
-
 
   partitioner.splitCurrArea( split, *tempCS );
   bool qgEnableChildren = partitioner.currQgEnable(); // QG possible at children level
@@ -1613,16 +1610,6 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   tempCS->releaseIntermediateData();
 
   tempCS->prevQP[partitioner.chType] = oldPrevQp;
-
-  /*lindino*/
-  #if DATASET_EXTRACTION_TARGET
-
-    for(int i = 0; i < bestCS->cus.size(); i++)
-    {
-      if (partitioner.chType == CHANNEL_TYPE_LUMA) features::extractTarget(bestCS, bestCS->cus[i], encTestMode);
-    }
-
-  #endif
 }
 
 bool EncCu::xCheckRDCostIntra(CodingStructure *&tempCS, CodingStructure *&bestCS, Partitioner &partitioner, const EncTestMode& encTestMode, bool adaptiveColorTrans)

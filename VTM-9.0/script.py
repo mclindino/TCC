@@ -15,7 +15,7 @@ def main():
         #        'Vidyo4', 'Dark', 'NetflixDinnerScene', 'KristenAndSara', 'Netflix_DrivingPOV'
         #]
 
-        videos = ['Touchdown_pass', 'Jockey_1080p', 'Beauty_1080p', 'RushFieldCuts', 'Netflix_TunnelFlag']
+        videos = ['Vidyo4', 'Dark', 'NetflixDinnerScene', 'KristenAndSara', 'Netflix_DrivingPOV']
 
         videos.reverse()
 
