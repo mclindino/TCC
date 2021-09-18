@@ -122,7 +122,7 @@ features::features(string m_videoName, int m_iQP, double m_iSourceWidth, double 
   mergeGeoRDCost        = MAX_DOUBLE;
   intraRDCost           = MAX_DOUBLE;
 
-  createFile();
+  //createFile();
   CTUFrame              = initCTUFrame();
 }
 
@@ -146,12 +146,6 @@ void features::createFile()
                 << "quarter4Var,quarter4Mean,quarter4GradH,quarter4GradV,quarter4RatioGrad,quarter4Sum" << endl;
 
   file_target << "videoname,paramQP,frameWidth,frameHeight,CU_width,CU_height,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth" << endl;
-             //<< "splitType,RDCost" << endl; //
-
-  check_file << "paramQP,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
-                << "variance,mean,gradientH,gradientV,ratioGrad,sum,quarter1Var,quarter1Mean,quarter1GradH,quarter1GradV,quarter1RatioGrad,quarter1Sum,"
-                << "quarter2Var,quarter2Mean,quarter2GradH,quarter2GradV,quarter2RatioGrad,quarter2Sum,"
-                << "quarter3Var,quarter3Mean,quarter3GradH,quarter3GradV,quarter3RatioGrad,quarter3Sum,direction,decision" << endl;
 }
 
 
@@ -437,11 +431,6 @@ void features::setIntraRDCost(double m_intra)
 
 void features::extractCUPixel(CodingStructure* cs, PartSplit split, Partitioner* partitioner)//, CodingUnit* cu)
 {
-  /*int xTL = cs->area.Y().topLeft().x;
-  int yTL = cs->area.Y().topLeft().y;
-  int xBR = cs->area.Y().bottomRight().x;
-  int yBR = cs->area.Y().bottomRight().y;*/
-
   int xTL = partitioner->currArea().Y().topLeft().x;
   int yTL = partitioner->currArea().Y().topLeft().y;
   int xBR = partitioner->currArea().Y().bottomRight().x;
@@ -569,7 +558,8 @@ void features::extractCUPixel(CodingStructure* cs, PartSplit split, Partitioner*
     f_HIVIMean  = abs(f_quarter1Mean - 2*f_quarter2Mean) + abs(2*f_quarter2Mean - f_quarter3Mean);
     f_HIVIRatioGrad = abs(f_quarter1RatioGrad - 2*f_quarter2RatioGrad) + abs(2*f_quarter2RatioGrad - f_quarter3RatioGrad);
   }
-  file_features << 
+  
+  /*file_features << 
   videoName << "," <<
   cs->cost << "," <<
   frameWidth << "," <<
@@ -614,163 +604,136 @@ void features::extractCUPixel(CodingStructure* cs, PartSplit split, Partitioner*
   f_quarter4GradH << "," <<
   f_quarter4GradV << "," <<
   f_quarter4RatioGrad << "," <<
-  f_quarter4Sum << endl;
+  f_quarter4Sum << endl; */
 }
 
-//int features::predictQUADSPLIT (Partitioner* partitioner) {return; }
 int features::predictHORZSPLIT (Partitioner* partitioner)
 {
-  if((partitioner->currArea().Y().bottomRight().x >= frameWidth) || (partitioner->currArea().Y().bottomRight().y >= frameHeight)) return 1;
- /*if(((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 128)) )
+ if(((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 128)) )
   {
-    float features_s0_HORZ_SPLIT[22];
-    features_s0_HORZ_SPLIT[0] = f_paramQP;
-    features_s0_HORZ_SPLIT[1] = f_topLeft_x;
-    features_s0_HORZ_SPLIT[2] = f_bottomRight_x;
-    features_s0_HORZ_SPLIT[3] = f_POC;
-    features_s0_HORZ_SPLIT[4] = f_variance;
-    features_s0_HORZ_SPLIT[5] = f_mean;
-    features_s0_HORZ_SPLIT[6] = f_gradientH;
-    features_s0_HORZ_SPLIT[7] = f_gradientV;
-    features_s0_HORZ_SPLIT[8] = f_ratioGrad;
-    features_s0_HORZ_SPLIT[9] = f_sum;
-    features_s0_HORZ_SPLIT[10] = f_quarter1Var;
-    features_s0_HORZ_SPLIT[11] = f_quarter1Mean;
-    features_s0_HORZ_SPLIT[12] = f_quarter1GradH;
-    features_s0_HORZ_SPLIT[13] = f_quarter1GradV;
-    features_s0_HORZ_SPLIT[14] = f_quarter1RatioGrad;
-    features_s0_HORZ_SPLIT[15] = f_quarter1Sum;
-    features_s0_HORZ_SPLIT[16] = f_quarter2Var;
-    features_s0_HORZ_SPLIT[17] = f_quarter2Mean;
-    features_s0_HORZ_SPLIT[18] = f_quarter2GradH;
-    features_s0_HORZ_SPLIT[19] = f_quarter2GradV;
-    features_s0_HORZ_SPLIT[20] = f_quarter2RatioGrad;
-    features_s0_HORZ_SPLIT[21] = f_quarter2Sum;
+    float features_s0_horz[19];
+    features_s0_horz[0] = f_paramQP;
+    features_s0_horz[1] = f_variance;
+    features_s0_horz[2] = f_mean;
+    features_s0_horz[3] = f_gradientH;
+    features_s0_horz[4] = f_gradientV;
+    features_s0_horz[5] = f_ratioGrad;
+    features_s0_horz[6] = f_sum;
+    features_s0_horz[7] = f_quarter1Var;
+    features_s0_horz[8] = f_quarter1Mean;
+    features_s0_horz[9] = f_quarter1GradH;
+    features_s0_horz[10] = f_quarter1GradV;
+    features_s0_horz[11] = f_quarter1RatioGrad;
+    features_s0_horz[12] = f_quarter1Sum;
+    features_s0_horz[13] = f_quarter2Var;
+    features_s0_horz[14] = f_quarter2Mean;
+    features_s0_horz[15] = f_quarter2GradH;
+    features_s0_horz[16] = f_quarter2GradV;
+    features_s0_horz[17] = f_quarter2RatioGrad;
+    features_s0_horz[18] = f_quarter2Sum;
 
-    int decision = predict_s0_HORZ_SPLIT(features_s0_HORZ_SPLIT);
+    int decision = predict_s0_horz(features_s0_horz);
     fZeros();
     return decision;
   }
   else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 128)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 64)) )
   {
-    float features_s1_HORZ_SPLIT[22];
-    features_s1_HORZ_SPLIT[0] = f_paramQP;
-    features_s1_HORZ_SPLIT[1] = f_topLeft_x;
-    features_s1_HORZ_SPLIT[2] = f_bottomRight_x;
-    features_s1_HORZ_SPLIT[3] = f_POC;
-    features_s1_HORZ_SPLIT[4] = f_variance;
-    features_s1_HORZ_SPLIT[5] = f_mean;
-    features_s1_HORZ_SPLIT[6] = f_gradientH;
-    features_s1_HORZ_SPLIT[7] = f_gradientV;
-    features_s1_HORZ_SPLIT[8] = f_ratioGrad;
-    features_s1_HORZ_SPLIT[9] = f_sum;
-    features_s1_HORZ_SPLIT[10] = f_quarter1Var;
-    features_s1_HORZ_SPLIT[11] = f_quarter1Mean;
-    features_s1_HORZ_SPLIT[12] = f_quarter1GradH;
-    features_s1_HORZ_SPLIT[13] = f_quarter1GradV;
-    features_s1_HORZ_SPLIT[14] = f_quarter1RatioGrad;
-    features_s1_HORZ_SPLIT[15] = f_quarter1Sum;
-    features_s1_HORZ_SPLIT[16] = f_quarter2Var;
-    features_s1_HORZ_SPLIT[17] = f_quarter2Mean;
-    features_s1_HORZ_SPLIT[18] = f_quarter2GradH;
-    features_s1_HORZ_SPLIT[19] = f_quarter2GradV;
-    features_s1_HORZ_SPLIT[20] = f_quarter2RatioGrad;
-    features_s1_HORZ_SPLIT[21] = f_quarter2Sum;
+    float features_s1_horz[19];
+    features_s1_horz[0] = f_paramQP;
+    features_s1_horz[1] = f_variance;
+    features_s1_horz[2] = f_mean;
+    features_s1_horz[3] = f_gradientH;
+    features_s1_horz[4] = f_gradientV;
+    features_s1_horz[5] = f_ratioGrad;
+    features_s1_horz[6] = f_sum;
+    features_s1_horz[7] = f_quarter1Var;
+    features_s1_horz[8] = f_quarter1Mean;
+    features_s1_horz[9] = f_quarter1GradH;
+    features_s1_horz[10] = f_quarter1GradV;
+    features_s1_horz[11] = f_quarter1RatioGrad;
+    features_s1_horz[12] = f_quarter1Sum;
+    features_s1_horz[13] = f_quarter2Var;
+    features_s1_horz[14] = f_quarter2Mean;
+    features_s1_horz[15] = f_quarter2GradH;
+    features_s1_horz[16] = f_quarter2GradV;
+    features_s1_horz[17] = f_quarter2RatioGrad;
+    features_s1_horz[18] = f_quarter2Sum;
 
-    int decision = predict_s1_HORZ_SPLIT(features_s1_HORZ_SPLIT);
+    int decision = predict_s1_horz(features_s1_horz);
     fZeros();
     return decision;
   }
-  else */if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 64)) ||
+  
+  else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 64)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 32)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 128)) )
   {
-    float features_s2_HORZ_SPLIT[32];
-    features_s2_HORZ_SPLIT[0] = f_paramQP;
-    features_s2_HORZ_SPLIT[1] = f_topLeft_x;
-    features_s2_HORZ_SPLIT[2] = f_topLeft_y;
-    features_s2_HORZ_SPLIT[3] = f_bottomRight_x;
-    features_s2_HORZ_SPLIT[4] = f_bottomRight_y;
-    features_s2_HORZ_SPLIT[5] = f_POC;
-    features_s2_HORZ_SPLIT[6] = f_qtdepth;
-    features_s2_HORZ_SPLIT[7] = f_mtdepth;
-    features_s2_HORZ_SPLIT[8] = f_variance;
-    features_s2_HORZ_SPLIT[9] = f_mean;
-    features_s2_HORZ_SPLIT[10] = f_gradientH;
-    features_s2_HORZ_SPLIT[11] = f_gradientV;
-    features_s2_HORZ_SPLIT[12] = f_ratioGrad;
-    features_s2_HORZ_SPLIT[13] = f_sum;
-    features_s2_HORZ_SPLIT[14] = f_quarter1Var;
-    features_s2_HORZ_SPLIT[15] = f_quarter1Mean;
-    features_s2_HORZ_SPLIT[16] = f_quarter1GradH;
-    features_s2_HORZ_SPLIT[17] = f_quarter1GradV;
-    features_s2_HORZ_SPLIT[18] = f_quarter1RatioGrad;
-    features_s2_HORZ_SPLIT[19] = f_quarter1Sum;
-    features_s2_HORZ_SPLIT[20] = f_quarter2Var;
-    features_s2_HORZ_SPLIT[21] = f_quarter2Mean;
-    features_s2_HORZ_SPLIT[22] = f_quarter2GradH;
-    features_s2_HORZ_SPLIT[23] = f_quarter2GradV;
-    features_s2_HORZ_SPLIT[24] = f_quarter2RatioGrad;
-    features_s2_HORZ_SPLIT[25] = f_quarter2Sum;
-    features_s2_HORZ_SPLIT[26] = f_quarter3Var;
-    features_s2_HORZ_SPLIT[27] = f_quarter3Mean;
-    features_s2_HORZ_SPLIT[28] = f_quarter3GradH;
-    features_s2_HORZ_SPLIT[29] = f_quarter3GradV;
-    features_s2_HORZ_SPLIT[30] = f_quarter3RatioGrad;
-    features_s2_HORZ_SPLIT[31] = f_quarter3Sum;
+    float features_s2_horz[25];
+    features_s2_horz[0] = f_paramQP;
+    features_s2_horz[1] = f_variance;
+    features_s2_horz[2] = f_mean;
+    features_s2_horz[3] = f_gradientH;
+    features_s2_horz[4] = f_gradientV;
+    features_s2_horz[5] = f_ratioGrad;
+    features_s2_horz[6] = f_sum;
+    features_s2_horz[7] = f_quarter1Var;
+    features_s2_horz[8] = f_quarter1Mean;
+    features_s2_horz[9] = f_quarter1GradH;
+    features_s2_horz[10] = f_quarter1GradV;
+    features_s2_horz[11] = f_quarter1RatioGrad;
+    features_s2_horz[12] = f_quarter1Sum;
+    features_s2_horz[13] = f_quarter2Var;
+    features_s2_horz[14] = f_quarter2Mean;
+    features_s2_horz[15] = f_quarter2GradH;
+    features_s2_horz[16] = f_quarter2GradV;
+    features_s2_horz[17] = f_quarter2RatioGrad;
+    features_s2_horz[18] = f_quarter2Sum;
+    features_s2_horz[19] = f_quarter3Var;
+    features_s2_horz[20] = f_quarter3Mean;
+    features_s2_horz[21] = f_quarter3GradH;
+    features_s2_horz[22] = f_quarter3GradV;
+    features_s2_horz[23] = f_quarter3RatioGrad;
+    features_s2_horz[24] = f_quarter3Sum;
 
-    int decision = predict_s2_HORZ_SPLIT(features_s2_HORZ_SPLIT);
-
-    for(int i = 0; i < 32; i++)
-    {
-      check_file << features_s2_HORZ_SPLIT[i] << ",";
-    }
-    check_file << "HORZ," << decision << endl;
+    int decision = predict_s2_horz(features_s2_horz);
     fZeros();
     return decision;
   }
 
- /*else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 32)) ||
+  else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 32)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 64)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 16)) ||
           ((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 128))) 
   {
-    float features_s3_HORZ_SPLIT[32];
-    features_s3_HORZ_SPLIT[0] = f_paramQP;
-    features_s3_HORZ_SPLIT[1] = f_CU_width;
-    features_s3_HORZ_SPLIT[2] = f_CU_height;
-    features_s3_HORZ_SPLIT[3] = f_topLeft_x;
-    features_s3_HORZ_SPLIT[4] = f_topLeft_y;
-    features_s3_HORZ_SPLIT[5] = f_bottomRight_x;
-    features_s3_HORZ_SPLIT[6] = f_bottomRight_y;
-    features_s3_HORZ_SPLIT[7] = f_POC;
-    features_s3_HORZ_SPLIT[8] = f_variance;
-    features_s3_HORZ_SPLIT[9] = f_mean;
-    features_s3_HORZ_SPLIT[10] = f_gradientH;
-    features_s3_HORZ_SPLIT[11] = f_gradientV;
-    features_s3_HORZ_SPLIT[12] = f_ratioGrad;
-    features_s3_HORZ_SPLIT[13] = f_sum;
-    features_s3_HORZ_SPLIT[14] = f_quarter1Var;
-    features_s3_HORZ_SPLIT[15] = f_quarter1Mean;
-    features_s3_HORZ_SPLIT[16] = f_quarter1GradH;
-    features_s3_HORZ_SPLIT[17] = f_quarter1GradV;
-    features_s3_HORZ_SPLIT[18] = f_quarter1RatioGrad;
-    features_s3_HORZ_SPLIT[19] = f_quarter1Sum;
-    features_s3_HORZ_SPLIT[20] = f_quarter2Var;
-    features_s3_HORZ_SPLIT[21] = f_quarter2Mean;
-    features_s3_HORZ_SPLIT[22] = f_quarter2GradH;
-    features_s3_HORZ_SPLIT[23] = f_quarter2GradV;
-    features_s3_HORZ_SPLIT[24] = f_quarter2RatioGrad;
-    features_s3_HORZ_SPLIT[25] = f_quarter2Sum;
-    features_s3_HORZ_SPLIT[26] = f_quarter3Var;
-    features_s3_HORZ_SPLIT[27] = f_quarter3Mean;
-    features_s3_HORZ_SPLIT[28] = f_quarter3GradH;
-    features_s3_HORZ_SPLIT[29] = f_quarter3GradV;
-    features_s3_HORZ_SPLIT[30] = f_quarter3RatioGrad;
-    features_s3_HORZ_SPLIT[31] = f_quarter3Sum;
+    float features_s3_horz[25];
+    features_s3_horz[0] = f_paramQP;
+    features_s3_horz[1] = f_variance;
+    features_s3_horz[2] = f_mean;
+    features_s3_horz[3] = f_gradientH;
+    features_s3_horz[4] = f_gradientV;
+    features_s3_horz[5] = f_ratioGrad;
+    features_s3_horz[6] = f_sum;
+    features_s3_horz[7] = f_quarter1Var;
+    features_s3_horz[8] = f_quarter1Mean;
+    features_s3_horz[9] = f_quarter1GradH;
+    features_s3_horz[10] = f_quarter1GradV;
+    features_s3_horz[11] = f_quarter1RatioGrad;
+    features_s3_horz[12] = f_quarter1Sum;
+    features_s3_horz[13] = f_quarter2Var;
+    features_s3_horz[14] = f_quarter2Mean;
+    features_s3_horz[15] = f_quarter2GradH;
+    features_s3_horz[16] = f_quarter2GradV;
+    features_s3_horz[17] = f_quarter2RatioGrad;
+    features_s3_horz[18] = f_quarter2Sum;
+    features_s3_horz[19] = f_quarter3Var;
+    features_s3_horz[20] = f_quarter3Mean;
+    features_s3_horz[21] = f_quarter3GradH;
+    features_s3_horz[22] = f_quarter3GradV;
+    features_s3_horz[23] = f_quarter3RatioGrad;
+    features_s3_horz[24] = f_quarter3Sum;
     
-    int decision = predict_s3_HORZ_SPLIT(features_s3_HORZ_SPLIT);
+    int decision = predict_s3_horz(features_s3_horz);
     fZeros();
     return decision;
   }
@@ -781,42 +744,34 @@ int features::predictHORZSPLIT (Partitioner* partitioner)
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 128)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 8)) )
   {
-    float features_s4_HORZ_SPLIT[34];
-    features_s4_HORZ_SPLIT[0] = f_paramQP;
-    features_s4_HORZ_SPLIT[1] = f_CU_width;
-    features_s4_HORZ_SPLIT[2] = f_CU_height;
-    features_s4_HORZ_SPLIT[3] = f_topLeft_x;
-    features_s4_HORZ_SPLIT[4] = f_topLeft_y;
-    features_s4_HORZ_SPLIT[5] = f_bottomRight_x;
-    features_s4_HORZ_SPLIT[6] = f_bottomRight_y;
-    features_s4_HORZ_SPLIT[7] = f_POC;
-    features_s4_HORZ_SPLIT[8] = f_qtdepth;
-    features_s4_HORZ_SPLIT[9] = f_mtdepth;
-    features_s4_HORZ_SPLIT[10] = f_variance;
-    features_s4_HORZ_SPLIT[11] = f_mean;
-    features_s4_HORZ_SPLIT[12] = f_gradientH;
-    features_s4_HORZ_SPLIT[13] = f_gradientV;
-    features_s4_HORZ_SPLIT[14] = f_ratioGrad;
-    features_s4_HORZ_SPLIT[15] = f_sum;
-    features_s4_HORZ_SPLIT[16] = f_quarter1Var;
-    features_s4_HORZ_SPLIT[17] = f_quarter1Mean;
-    features_s4_HORZ_SPLIT[18] = f_quarter1GradH;
-    features_s4_HORZ_SPLIT[19] = f_quarter1GradV;
-    features_s4_HORZ_SPLIT[20] = f_quarter1RatioGrad;
-    features_s4_HORZ_SPLIT[21] = f_quarter1Sum;
-    features_s4_HORZ_SPLIT[22] = f_quarter2Var;
-    features_s4_HORZ_SPLIT[23] = f_quarter2Mean;
-    features_s4_HORZ_SPLIT[24] = f_quarter2GradH;
-    features_s4_HORZ_SPLIT[25] = f_quarter2GradV;
-    features_s4_HORZ_SPLIT[26] = f_quarter2RatioGrad;
-    features_s4_HORZ_SPLIT[27] = f_quarter2Sum;
-    features_s4_HORZ_SPLIT[28] = f_quarter3Var;
-    features_s4_HORZ_SPLIT[29] = f_quarter3Mean;
-    features_s4_HORZ_SPLIT[30] = f_quarter3GradH;
-    features_s4_HORZ_SPLIT[31] = f_quarter3GradV;
-    features_s4_HORZ_SPLIT[32] = f_quarter3RatioGrad;
-    features_s4_HORZ_SPLIT[33] = f_quarter3Sum;
-    int decision = predict_s4_HORZ_SPLIT(features_s4_HORZ_SPLIT);
+    float features_s4_horz[25];
+    features_s4_horz[0] = f_paramQP;
+    features_s4_horz[1] = f_variance;
+    features_s4_horz[2] = f_mean;
+    features_s4_horz[3] = f_gradientH;
+    features_s4_horz[4] = f_gradientV;
+    features_s4_horz[5] = f_ratioGrad;
+    features_s4_horz[6] = f_sum;
+    features_s4_horz[7] = f_quarter1Var;
+    features_s4_horz[8] = f_quarter1Mean;
+    features_s4_horz[9] = f_quarter1GradH;
+    features_s4_horz[10] = f_quarter1GradV;
+    features_s4_horz[11] = f_quarter1RatioGrad;
+    features_s4_horz[12] = f_quarter1Sum;
+    features_s4_horz[13] = f_quarter2Var;
+    features_s4_horz[14] = f_quarter2Mean;
+    features_s4_horz[15] = f_quarter2GradH;
+    features_s4_horz[16] = f_quarter2GradV;
+    features_s4_horz[17] = f_quarter2RatioGrad;
+    features_s4_horz[18] = f_quarter2Sum;
+    features_s4_horz[19] = f_quarter3Var;
+    features_s4_horz[20] = f_quarter3Mean;
+    features_s4_horz[21] = f_quarter3GradH;
+    features_s4_horz[22] = f_quarter3GradV;
+    features_s4_horz[23] = f_quarter3RatioGrad;
+    features_s4_horz[24] = f_quarter3Sum;
+    
+    int decision = predict_s4_horz(features_s4_horz);
     fZeros();
     return decision;
   }
@@ -826,42 +781,34 @@ int features::predictHORZSPLIT (Partitioner* partitioner)
           ((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 8)) ||
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 64)) )
   {
-    float features_s5_HORZ_SPLIT[34];
-    features_s5_HORZ_SPLIT[0] = f_paramQP;
-    features_s5_HORZ_SPLIT[1] = f_CU_width;
-    features_s5_HORZ_SPLIT[2] = f_CU_height;
-    features_s5_HORZ_SPLIT[3] = f_topLeft_x;
-    features_s5_HORZ_SPLIT[4] = f_topLeft_y;
-    features_s5_HORZ_SPLIT[5] = f_bottomRight_x;
-    features_s5_HORZ_SPLIT[6] = f_bottomRight_y;
-    features_s5_HORZ_SPLIT[7] = f_POC;
-    features_s5_HORZ_SPLIT[8] = f_qtdepth;
-    features_s5_HORZ_SPLIT[9] = f_mtdepth;
-    features_s5_HORZ_SPLIT[10] = f_variance;
-    features_s5_HORZ_SPLIT[11] = f_mean;
-    features_s5_HORZ_SPLIT[12] = f_gradientH;
-    features_s5_HORZ_SPLIT[13] = f_gradientV;
-    features_s5_HORZ_SPLIT[14] = f_ratioGrad;
-    features_s5_HORZ_SPLIT[15] = f_sum;
-    features_s5_HORZ_SPLIT[16] = f_quarter1Var;
-    features_s5_HORZ_SPLIT[17] = f_quarter1Mean;
-    features_s5_HORZ_SPLIT[18] = f_quarter1GradH;
-    features_s5_HORZ_SPLIT[19] = f_quarter1GradV;
-    features_s5_HORZ_SPLIT[20] = f_quarter1RatioGrad;
-    features_s5_HORZ_SPLIT[21] = f_quarter1Sum;
-    features_s5_HORZ_SPLIT[22] = f_quarter2Var;
-    features_s5_HORZ_SPLIT[23] = f_quarter2Mean;
-    features_s5_HORZ_SPLIT[24] = f_quarter2GradH;
-    features_s5_HORZ_SPLIT[25] = f_quarter2GradV;
-    features_s5_HORZ_SPLIT[26] = f_quarter2RatioGrad;
-    features_s5_HORZ_SPLIT[27] = f_quarter2Sum;
-    features_s5_HORZ_SPLIT[28] = f_quarter3Var;
-    features_s5_HORZ_SPLIT[29] = f_quarter3Mean;
-    features_s5_HORZ_SPLIT[30] = f_quarter3GradH;
-    features_s5_HORZ_SPLIT[31] = f_quarter3GradV;
-    features_s5_HORZ_SPLIT[32] = f_quarter3RatioGrad;
-    features_s5_HORZ_SPLIT[33] = f_quarter3Sum;
-    int decision = predict_s5_HORZ_SPLIT(features_s5_HORZ_SPLIT);
+    float features_s5_horz[25];
+    features_s5_horz[0] = f_paramQP;
+    features_s5_horz[1] = f_variance;
+    features_s5_horz[2] = f_mean;
+    features_s5_horz[3] = f_gradientH;
+    features_s5_horz[4] = f_gradientV;
+    features_s5_horz[5] = f_ratioGrad;
+    features_s5_horz[6] = f_sum;
+    features_s5_horz[7] = f_quarter1Var;
+    features_s5_horz[8] = f_quarter1Mean;
+    features_s5_horz[9] = f_quarter1GradH;
+    features_s5_horz[10] = f_quarter1GradV;
+    features_s5_horz[11] = f_quarter1RatioGrad;
+    features_s5_horz[12] = f_quarter1Sum;
+    features_s5_horz[13] = f_quarter2Var;
+    features_s5_horz[14] = f_quarter2Mean;
+    features_s5_horz[15] = f_quarter2GradH;
+    features_s5_horz[16] = f_quarter2GradV;
+    features_s5_horz[17] = f_quarter2RatioGrad;
+    features_s5_horz[18] = f_quarter2Sum;
+    features_s5_horz[19] = f_quarter3Var;
+    features_s5_horz[20] = f_quarter3Mean;
+    features_s5_horz[21] = f_quarter3GradH;
+    features_s5_horz[22] = f_quarter3GradV;
+    features_s5_horz[23] = f_quarter3RatioGrad;
+    features_s5_horz[24] = f_quarter3Sum;
+    
+    int decision = predict_s5_horz(features_s5_horz);
     fZeros();
     return decision;
   }
@@ -870,45 +817,37 @@ int features::predictHORZSPLIT (Partitioner* partitioner)
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 8)) ||
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 32)) )
   {
-    float features_s6_HORZ_SPLIT[34];
-    features_s6_HORZ_SPLIT[0] = f_paramQP;
-    features_s6_HORZ_SPLIT[1] = f_CU_width;
-    features_s6_HORZ_SPLIT[2] = f_CU_height;
-    features_s6_HORZ_SPLIT[3] = f_topLeft_x;
-    features_s6_HORZ_SPLIT[4] = f_topLeft_y;
-    features_s6_HORZ_SPLIT[5] = f_bottomRight_x;
-    features_s6_HORZ_SPLIT[6] = f_bottomRight_y;
-    features_s6_HORZ_SPLIT[7] = f_POC;
-    features_s6_HORZ_SPLIT[8] = f_qtdepth;
-    features_s6_HORZ_SPLIT[9] = f_mtdepth;
-    features_s6_HORZ_SPLIT[10] = f_variance;
-    features_s6_HORZ_SPLIT[11] = f_mean;
-    features_s6_HORZ_SPLIT[12] = f_gradientH;
-    features_s6_HORZ_SPLIT[13] = f_gradientV;
-    features_s6_HORZ_SPLIT[14] = f_ratioGrad;
-    features_s6_HORZ_SPLIT[15] = f_sum;
-    features_s6_HORZ_SPLIT[16] = f_quarter1Var;
-    features_s6_HORZ_SPLIT[17] = f_quarter1Mean;
-    features_s6_HORZ_SPLIT[18] = f_quarter1GradH;
-    features_s6_HORZ_SPLIT[19] = f_quarter1GradV;
-    features_s6_HORZ_SPLIT[20] = f_quarter1RatioGrad;
-    features_s6_HORZ_SPLIT[21] = f_quarter1Sum;
-    features_s6_HORZ_SPLIT[22] = f_quarter2Var;
-    features_s6_HORZ_SPLIT[23] = f_quarter2Mean;
-    features_s6_HORZ_SPLIT[24] = f_quarter2GradH;
-    features_s6_HORZ_SPLIT[25] = f_quarter2GradV;
-    features_s6_HORZ_SPLIT[26] = f_quarter2RatioGrad;
-    features_s6_HORZ_SPLIT[27] = f_quarter2Sum;
-    features_s6_HORZ_SPLIT[28] = f_quarter3Var;
-    features_s6_HORZ_SPLIT[29] = f_quarter3Mean;
-    features_s6_HORZ_SPLIT[30] = f_quarter3GradH;
-    features_s6_HORZ_SPLIT[31] = f_quarter3GradV;
-    features_s6_HORZ_SPLIT[32] = f_quarter3RatioGrad;
-    features_s6_HORZ_SPLIT[33] = f_quarter3Sum;
-    int decision = predict_s6_HORZ_SPLIT(features_s6_HORZ_SPLIT);
+    float features_s6_horz[25];
+    features_s6_horz[0] = f_paramQP;
+    features_s6_horz[1] = f_variance;
+    features_s6_horz[2] = f_mean;
+    features_s6_horz[3] = f_gradientH;
+    features_s6_horz[4] = f_gradientV;
+    features_s6_horz[5] = f_ratioGrad;
+    features_s6_horz[6] = f_sum;
+    features_s6_horz[7] = f_quarter1Var;
+    features_s6_horz[8] = f_quarter1Mean;
+    features_s6_horz[9] = f_quarter1GradH;
+    features_s6_horz[10] = f_quarter1GradV;
+    features_s6_horz[11] = f_quarter1RatioGrad;
+    features_s6_horz[12] = f_quarter1Sum;
+    features_s6_horz[13] = f_quarter2Var;
+    features_s6_horz[14] = f_quarter2Mean;
+    features_s6_horz[15] = f_quarter2GradH;
+    features_s6_horz[16] = f_quarter2GradV;
+    features_s6_horz[17] = f_quarter2RatioGrad;
+    features_s6_horz[18] = f_quarter2Sum;
+    features_s6_horz[19] = f_quarter3Var;
+    features_s6_horz[20] = f_quarter3Mean;
+    features_s6_horz[21] = f_quarter3GradH;
+    features_s6_horz[22] = f_quarter3GradV;
+    features_s6_horz[23] = f_quarter3RatioGrad;
+    features_s6_horz[24] = f_quarter3Sum;
+    
+    int decision = predict_s6_horz(features_s6_horz);
     fZeros();
     return decision;
-  }*/
+  }
   else
   {
     return 1;
@@ -917,161 +856,132 @@ int features::predictHORZSPLIT (Partitioner* partitioner)
 
 int features::predictVERTSPLIT (Partitioner* partitioner, PartSplit split)
 {
-  if((partitioner->currArea().Y().bottomRight().x >= frameWidth) || (partitioner->currArea().Y().bottomRight().y >= frameHeight)) return 1;
-  /*if( (partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 128) )
+  if( (partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 128) )
   {
-    float features_s0_VERT_SPLIT[22];
-    features_s0_VERT_SPLIT[0] = f_paramQP;
-    features_s0_VERT_SPLIT[1] = f_topLeft_x;
-    features_s0_VERT_SPLIT[2] = f_bottomRight_x;
-    features_s0_VERT_SPLIT[3] = f_POC;
-    features_s0_VERT_SPLIT[4] = f_variance;
-    features_s0_VERT_SPLIT[5] = f_mean;
-    features_s0_VERT_SPLIT[6] = f_gradientH;
-    features_s0_VERT_SPLIT[7] = f_gradientV;
-    features_s0_VERT_SPLIT[8] = f_ratioGrad;
-    features_s0_VERT_SPLIT[9] = f_sum;
-    features_s0_VERT_SPLIT[10] = f_quarter1Var;
-    features_s0_VERT_SPLIT[11] = f_quarter1Mean;
-    features_s0_VERT_SPLIT[12] = f_quarter1GradH;
-    features_s0_VERT_SPLIT[13] = f_quarter1GradV;
-    features_s0_VERT_SPLIT[14] = f_quarter1RatioGrad;
-    features_s0_VERT_SPLIT[15] = f_quarter1Sum;
-    features_s0_VERT_SPLIT[16] = f_quarter2Var;
-    features_s0_VERT_SPLIT[17] = f_quarter2Mean;
-    features_s0_VERT_SPLIT[18] = f_quarter2GradH;
-    features_s0_VERT_SPLIT[19] = f_quarter2GradV;
-    features_s0_VERT_SPLIT[20] = f_quarter2RatioGrad;
-    features_s0_VERT_SPLIT[21] = f_quarter2Sum;
+    float features_s0_vert[19];
+    features_s0_vert[0] = f_paramQP;
+    features_s0_vert[1] = f_variance;
+    features_s0_vert[2] = f_mean;
+    features_s0_vert[3] = f_gradientH;
+    features_s0_vert[4] = f_gradientV;
+    features_s0_vert[5] = f_ratioGrad;
+    features_s0_vert[6] = f_sum;
+    features_s0_vert[7] = f_quarter1Var;
+    features_s0_vert[8] = f_quarter1Mean;
+    features_s0_vert[9] = f_quarter1GradH;
+    features_s0_vert[10] = f_quarter1GradV;
+    features_s0_vert[11] = f_quarter1RatioGrad;
+    features_s0_vert[12] = f_quarter1Sum;
+    features_s0_vert[13] = f_quarter2Var;
+    features_s0_vert[14] = f_quarter2Mean;
+    features_s0_vert[15] = f_quarter2GradH;
+    features_s0_vert[16] = f_quarter2GradV;
+    features_s0_vert[17] = f_quarter2RatioGrad;
+    features_s0_vert[18] = f_quarter2Sum;
     
-    int decision =  predict_s0_VERT_SPLIT(features_s0_VERT_SPLIT);
+    int decision =  predict_s0_vert(features_s0_vert);
     fZeros();
     return decision;
   }
   else if(((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 64)) ||
           ((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 128)) )
   {
-    float features_s1_VERT_SPLIT[24];
-    features_s1_VERT_SPLIT[0] = f_paramQP;
-    features_s1_VERT_SPLIT[1] = f_topLeft_x;
-    features_s1_VERT_SPLIT[2] = f_topLeft_y;
-    features_s1_VERT_SPLIT[3] = f_bottomRight_x;
-    features_s1_VERT_SPLIT[4] = f_bottomRight_y;
-    features_s1_VERT_SPLIT[5] = f_POC;
-    features_s1_VERT_SPLIT[6] = f_variance;
-    features_s1_VERT_SPLIT[7] = f_mean;
-    features_s1_VERT_SPLIT[8] = f_gradientH;
-    features_s1_VERT_SPLIT[9] = f_gradientV;
-    features_s1_VERT_SPLIT[10] = f_ratioGrad;
-    features_s1_VERT_SPLIT[11] = f_sum;
-    features_s1_VERT_SPLIT[12] = f_quarter1Var;
-    features_s1_VERT_SPLIT[13] = f_quarter1Mean;
-    features_s1_VERT_SPLIT[14] = f_quarter1GradH;
-    features_s1_VERT_SPLIT[15] = f_quarter1GradV;
-    features_s1_VERT_SPLIT[16] = f_quarter1RatioGrad;
-    features_s1_VERT_SPLIT[17] = f_quarter1Sum;
-    features_s1_VERT_SPLIT[18] = f_quarter2Var;
-    features_s1_VERT_SPLIT[19] = f_quarter2Mean;
-    features_s1_VERT_SPLIT[20] = f_quarter2GradH;
-    features_s1_VERT_SPLIT[21] = f_quarter2GradV;
-    features_s1_VERT_SPLIT[22] = f_quarter2RatioGrad;
-    features_s1_VERT_SPLIT[23] = f_quarter2Sum;
+    float features_s1_vert[19];
+    features_s1_vert[0] = f_paramQP;
+    features_s1_vert[1] = f_variance;
+    features_s1_vert[2] = f_mean;
+    features_s1_vert[3] = f_gradientH;
+    features_s1_vert[4] = f_gradientV;
+    features_s1_vert[5] = f_ratioGrad;
+    features_s1_vert[6] = f_sum;
+    features_s1_vert[7] = f_quarter1Var;
+    features_s1_vert[8] = f_quarter1Mean;
+    features_s1_vert[9] = f_quarter1GradH;
+    features_s1_vert[10] = f_quarter1GradV;
+    features_s1_vert[11] = f_quarter1RatioGrad;
+    features_s1_vert[12] = f_quarter1Sum;
+    features_s1_vert[13] = f_quarter2Var;
+    features_s1_vert[14] = f_quarter2Mean;
+    features_s1_vert[15] = f_quarter2GradH;
+    features_s1_vert[16] = f_quarter2GradV;
+    features_s1_vert[17] = f_quarter2RatioGrad;
+    features_s1_vert[18] = f_quarter2Sum;
     
-    int decision =  predict_s1_VERT_SPLIT(features_s1_VERT_SPLIT);
+    int decision =  predict_s1_vert(features_s1_vert);
     fZeros();
     return decision;
   }
-  else */ if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 64)) ||
+  else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 64)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 128)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 32))  )
   {
 
-    float features_s2_VERT_SPLIT[32];
-    features_s2_VERT_SPLIT[0] = f_paramQP;
-    features_s2_VERT_SPLIT[1] = f_topLeft_x;
-    features_s2_VERT_SPLIT[2] = f_topLeft_y;
-    features_s2_VERT_SPLIT[3] = f_bottomRight_x;
-    features_s2_VERT_SPLIT[4] = f_bottomRight_y;
-    features_s2_VERT_SPLIT[5] = f_POC;
-    features_s2_VERT_SPLIT[6] = f_qtdepth;
-    features_s2_VERT_SPLIT[7] = f_mtdepth;
-    features_s2_VERT_SPLIT[8] = f_variance;
-    features_s2_VERT_SPLIT[9] = f_mean;
-    features_s2_VERT_SPLIT[10] = f_gradientH;
-    features_s2_VERT_SPLIT[11] = f_gradientV;
-    features_s2_VERT_SPLIT[12] = f_ratioGrad;
-    features_s2_VERT_SPLIT[13] = f_sum;
-    features_s2_VERT_SPLIT[14] = f_quarter1Var;
-    features_s2_VERT_SPLIT[15] = f_quarter1Mean;
-    features_s2_VERT_SPLIT[16] = f_quarter1GradH;
-    features_s2_VERT_SPLIT[17] = f_quarter1GradV;
-    features_s2_VERT_SPLIT[18] = f_quarter1RatioGrad;
-    features_s2_VERT_SPLIT[19] = f_quarter1Sum;
-    features_s2_VERT_SPLIT[20] = f_quarter2Var;
-    features_s2_VERT_SPLIT[21] = f_quarter2Mean;
-    features_s2_VERT_SPLIT[22] = f_quarter2GradH;
-    features_s2_VERT_SPLIT[23] = f_quarter2GradV;
-    features_s2_VERT_SPLIT[24] = f_quarter2RatioGrad;
-    features_s2_VERT_SPLIT[25] = f_quarter2Sum;
-    features_s2_VERT_SPLIT[26] = f_quarter3Var;
-    features_s2_VERT_SPLIT[27] = f_quarter3Mean;
-    features_s2_VERT_SPLIT[28] = f_quarter3GradH;
-    features_s2_VERT_SPLIT[29] = f_quarter3GradV;
-    features_s2_VERT_SPLIT[30] = f_quarter3RatioGrad;
-    features_s2_VERT_SPLIT[31] = f_quarter3Sum;
+    float features_s2_vert[25];
+    features_s2_vert[0] = f_paramQP;
+    features_s2_vert[1] = f_variance;
+    features_s2_vert[2] = f_mean;
+    features_s2_vert[3] = f_gradientH;
+    features_s2_vert[4] = f_gradientV;
+    features_s2_vert[5] = f_ratioGrad;
+    features_s2_vert[6] = f_sum;
+    features_s2_vert[7] = f_quarter1Var;
+    features_s2_vert[8] = f_quarter1Mean;
+    features_s2_vert[9] = f_quarter1GradH;
+    features_s2_vert[10] = f_quarter1GradV;
+    features_s2_vert[11] = f_quarter1RatioGrad;
+    features_s2_vert[12] = f_quarter1Sum;
+    features_s2_vert[13] = f_quarter2Var;
+    features_s2_vert[14] = f_quarter2Mean;
+    features_s2_vert[15] = f_quarter2GradH;
+    features_s2_vert[16] = f_quarter2GradV;
+    features_s2_vert[17] = f_quarter2RatioGrad;
+    features_s2_vert[18] = f_quarter2Sum;
+    features_s2_vert[19] = f_quarter3Var;
+    features_s2_vert[20] = f_quarter3Mean;
+    features_s2_vert[21] = f_quarter3GradH;
+    features_s2_vert[22] = f_quarter3GradV;
+    features_s2_vert[23] = f_quarter3RatioGrad;
+    features_s2_vert[24] = f_quarter3Sum;
 
-    int decision = predict_s2_VERT_SPLIT(features_s2_VERT_SPLIT);
-    
-    for(int i = 0; i < 32; i++)
-    {
-      check_file << features_s2_VERT_SPLIT[i] << ",";
-    }
-    check_file << "VERT," << decision << endl;
+    int decision = predict_s2_vert(features_s2_vert);
     fZeros();
     
     return decision;
 
   }
-/*else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 32)) ||
+  else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 32)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 64)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 16)) ||
           ((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 128))  )
   {
-    float features_s3_VERT_SPLIT[32];
-    features_s3_VERT_SPLIT[0] = f_paramQP;
-    features_s3_VERT_SPLIT[1] = f_CU_width;
-    features_s3_VERT_SPLIT[2] = f_CU_height;
-    features_s3_VERT_SPLIT[3] = f_topLeft_x;
-    features_s3_VERT_SPLIT[4] = f_topLeft_y;
-    features_s3_VERT_SPLIT[5] = f_bottomRight_x;
-    features_s3_VERT_SPLIT[6] = f_bottomRight_y;
-    features_s3_VERT_SPLIT[7] = f_POC;
-    features_s3_VERT_SPLIT[8] = f_variance;
-    features_s3_VERT_SPLIT[9] = f_mean;
-    features_s3_VERT_SPLIT[10] = f_gradientH;
-    features_s3_VERT_SPLIT[11] = f_gradientV;
-    features_s3_VERT_SPLIT[12] = f_ratioGrad;
-    features_s3_VERT_SPLIT[13] = f_sum;
-    features_s3_VERT_SPLIT[14] = f_quarter1Var;
-    features_s3_VERT_SPLIT[15] = f_quarter1Mean;
-    features_s3_VERT_SPLIT[16] = f_quarter1GradH;
-    features_s3_VERT_SPLIT[17] = f_quarter1GradV;
-    features_s3_VERT_SPLIT[18] = f_quarter1RatioGrad;
-    features_s3_VERT_SPLIT[19] = f_quarter1Sum;
-    features_s3_VERT_SPLIT[20] = f_quarter2Var;
-    features_s3_VERT_SPLIT[21] = f_quarter2Mean;
-    features_s3_VERT_SPLIT[22] = f_quarter2GradH;
-    features_s3_VERT_SPLIT[23] = f_quarter2GradV;
-    features_s3_VERT_SPLIT[24] = f_quarter2RatioGrad;
-    features_s3_VERT_SPLIT[25] = f_quarter2Sum;
-    features_s3_VERT_SPLIT[26] = f_quarter3Var;
-    features_s3_VERT_SPLIT[27] = f_quarter3Mean;
-    features_s3_VERT_SPLIT[28] = f_quarter3GradH;
-    features_s3_VERT_SPLIT[29] = f_quarter3GradV;
-    features_s3_VERT_SPLIT[30] = f_quarter3RatioGrad;
-    features_s3_VERT_SPLIT[31] = f_quarter3Sum;
-    
-    int decision =  predict_s3_VERT_SPLIT(features_s3_VERT_SPLIT);
+    float features_s3_vert[25];
+    features_s3_vert[0] = f_paramQP;
+    features_s3_vert[1] = f_variance;
+    features_s3_vert[2] = f_mean;
+    features_s3_vert[3] = f_gradientH;
+    features_s3_vert[4] = f_gradientV;
+    features_s3_vert[5] = f_ratioGrad;
+    features_s3_vert[6] = f_sum;
+    features_s3_vert[7] = f_quarter1Var;
+    features_s3_vert[8] = f_quarter1Mean;
+    features_s3_vert[9] = f_quarter1GradH;
+    features_s3_vert[10] = f_quarter1GradV;
+    features_s3_vert[11] = f_quarter1RatioGrad;
+    features_s3_vert[12] = f_quarter1Sum;
+    features_s3_vert[13] = f_quarter2Var;
+    features_s3_vert[14] = f_quarter2Mean;
+    features_s3_vert[15] = f_quarter2GradH;
+    features_s3_vert[16] = f_quarter2GradV;
+    features_s3_vert[17] = f_quarter2RatioGrad;
+    features_s3_vert[18] = f_quarter2Sum;
+    features_s3_vert[19] = f_quarter3Var;
+    features_s3_vert[20] = f_quarter3Mean;
+    features_s3_vert[21] = f_quarter3GradH;
+    features_s3_vert[22] = f_quarter3GradV;
+    features_s3_vert[23] = f_quarter3RatioGrad;
+    features_s3_vert[24] = f_quarter3Sum;
+        
+    int decision =  predict_s3_vert(features_s3_vert);
     fZeros();
     return decision;
   }
@@ -1082,43 +992,34 @@ int features::predictVERTSPLIT (Partitioner* partitioner, PartSplit split)
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 128)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 8)) )
   {
-    float features_s4_VERT_SPLIT[34];
-    features_s4_VERT_SPLIT[0] = f_paramQP;
-    features_s4_VERT_SPLIT[1] = f_CU_width;
-    features_s4_VERT_SPLIT[2] = f_CU_height;
-    features_s4_VERT_SPLIT[3] = f_topLeft_x;
-    features_s4_VERT_SPLIT[4] = f_topLeft_y;
-    features_s4_VERT_SPLIT[5] = f_bottomRight_x;
-    features_s4_VERT_SPLIT[6] = f_bottomRight_y;
-    features_s4_VERT_SPLIT[7] = f_POC;
-    features_s4_VERT_SPLIT[8] = f_qtdepth;
-    features_s4_VERT_SPLIT[9] = f_mtdepth;
-    features_s4_VERT_SPLIT[10] = f_variance;
-    features_s4_VERT_SPLIT[11] = f_mean;
-    features_s4_VERT_SPLIT[12] = f_gradientH;
-    features_s4_VERT_SPLIT[13] = f_gradientV;
-    features_s4_VERT_SPLIT[14] = f_ratioGrad;
-    features_s4_VERT_SPLIT[15] = f_sum;
-    features_s4_VERT_SPLIT[16] = f_quarter1Var;
-    features_s4_VERT_SPLIT[17] = f_quarter1Mean;
-    features_s4_VERT_SPLIT[18] = f_quarter1GradH;
-    features_s4_VERT_SPLIT[19] = f_quarter1GradV;
-    features_s4_VERT_SPLIT[20] = f_quarter1RatioGrad;
-    features_s4_VERT_SPLIT[21] = f_quarter1Sum;
-    features_s4_VERT_SPLIT[22] = f_quarter2Var;
-    features_s4_VERT_SPLIT[23] = f_quarter2Mean;
-    features_s4_VERT_SPLIT[24] = f_quarter2GradH;
-    features_s4_VERT_SPLIT[25] = f_quarter2GradV;
-    features_s4_VERT_SPLIT[26] = f_quarter2RatioGrad;
-    features_s4_VERT_SPLIT[27] = f_quarter2Sum;
-    features_s4_VERT_SPLIT[28] = f_quarter3Var;
-    features_s4_VERT_SPLIT[29] = f_quarter3Mean;
-    features_s4_VERT_SPLIT[30] = f_quarter3GradH;
-    features_s4_VERT_SPLIT[31] = f_quarter3GradV;
-    features_s4_VERT_SPLIT[32] = f_quarter3RatioGrad;
-    features_s4_VERT_SPLIT[33] = f_quarter3Sum;
+    float features_s4_vert[25];
+    features_s4_vert[0] = f_paramQP;
+    features_s4_vert[1] = f_variance;
+    features_s4_vert[2] = f_mean;
+    features_s4_vert[3] = f_gradientH;
+    features_s4_vert[4] = f_gradientV;
+    features_s4_vert[5] = f_ratioGrad;
+    features_s4_vert[6] = f_sum;
+    features_s4_vert[7] = f_quarter1Var;
+    features_s4_vert[8] = f_quarter1Mean;
+    features_s4_vert[9] = f_quarter1GradH;
+    features_s4_vert[10] = f_quarter1GradV;
+    features_s4_vert[11] = f_quarter1RatioGrad;
+    features_s4_vert[12] = f_quarter1Sum;
+    features_s4_vert[13] = f_quarter2Var;
+    features_s4_vert[14] = f_quarter2Mean;
+    features_s4_vert[15] = f_quarter2GradH;
+    features_s4_vert[16] = f_quarter2GradV;
+    features_s4_vert[17] = f_quarter2RatioGrad;
+    features_s4_vert[18] = f_quarter2Sum;
+    features_s4_vert[19] = f_quarter3Var;
+    features_s4_vert[20] = f_quarter3Mean;
+    features_s4_vert[21] = f_quarter3GradH;
+    features_s4_vert[22] = f_quarter3GradV;
+    features_s4_vert[23] = f_quarter3RatioGrad;
+    features_s4_vert[24] = f_quarter3Sum;
     
-    int decision =  predict_s4_VERT_SPLIT(features_s4_VERT_SPLIT);
+    int decision =  predict_s4_vert(features_s4_vert);
     fZeros();
     return decision;
   }
@@ -1128,43 +1029,34 @@ int features::predictVERTSPLIT (Partitioner* partitioner, PartSplit split)
           ((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 8)) ||
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 64)) )
   {
-    float features_s5_VERT_SPLIT[34];
-    features_s5_VERT_SPLIT[0] = f_paramQP;
-    features_s5_VERT_SPLIT[1] = f_CU_width;
-    features_s5_VERT_SPLIT[2] = f_CU_height;
-    features_s5_VERT_SPLIT[3] = f_topLeft_x;
-    features_s5_VERT_SPLIT[4] = f_topLeft_y;
-    features_s5_VERT_SPLIT[5] = f_bottomRight_x;
-    features_s5_VERT_SPLIT[6] = f_bottomRight_y;
-    features_s5_VERT_SPLIT[7] = f_POC;
-    features_s5_VERT_SPLIT[8] = f_qtdepth;
-    features_s5_VERT_SPLIT[9] = f_mtdepth;
-    features_s5_VERT_SPLIT[10] = f_variance;
-    features_s5_VERT_SPLIT[11] = f_mean;
-    features_s5_VERT_SPLIT[12] = f_gradientH;
-    features_s5_VERT_SPLIT[13] = f_gradientV;
-    features_s5_VERT_SPLIT[14] = f_ratioGrad;
-    features_s5_VERT_SPLIT[15] = f_sum;
-    features_s5_VERT_SPLIT[16] = f_quarter1Var;
-    features_s5_VERT_SPLIT[17] = f_quarter1Mean;
-    features_s5_VERT_SPLIT[18] = f_quarter1GradH;
-    features_s5_VERT_SPLIT[19] = f_quarter1GradV;
-    features_s5_VERT_SPLIT[20] = f_quarter1RatioGrad;
-    features_s5_VERT_SPLIT[21] = f_quarter1Sum;
-    features_s5_VERT_SPLIT[22] = f_quarter2Var;
-    features_s5_VERT_SPLIT[23] = f_quarter2Mean;
-    features_s5_VERT_SPLIT[24] = f_quarter2GradH;
-    features_s5_VERT_SPLIT[25] = f_quarter2GradV;
-    features_s5_VERT_SPLIT[26] = f_quarter2RatioGrad;
-    features_s5_VERT_SPLIT[27] = f_quarter2Sum;
-    features_s5_VERT_SPLIT[28] = f_quarter3Var;
-    features_s5_VERT_SPLIT[29] = f_quarter3Mean;
-    features_s5_VERT_SPLIT[30] = f_quarter3GradH;
-    features_s5_VERT_SPLIT[31] = f_quarter3GradV;
-    features_s5_VERT_SPLIT[32] = f_quarter3RatioGrad;
-    features_s5_VERT_SPLIT[33] = f_quarter3Sum;
+    float features_s5_vert[25];
+    features_s5_vert[0] = f_paramQP;
+    features_s5_vert[1] = f_variance;
+    features_s5_vert[2] = f_mean;
+    features_s5_vert[3] = f_gradientH;
+    features_s5_vert[4] = f_gradientV;
+    features_s5_vert[5] = f_ratioGrad;
+    features_s5_vert[6] = f_sum;
+    features_s5_vert[7] = f_quarter1Var;
+    features_s5_vert[8] = f_quarter1Mean;
+    features_s5_vert[9] = f_quarter1GradH;
+    features_s5_vert[10] = f_quarter1GradV;
+    features_s5_vert[11] = f_quarter1RatioGrad;
+    features_s5_vert[12] = f_quarter1Sum;
+    features_s5_vert[13] = f_quarter2Var;
+    features_s5_vert[14] = f_quarter2Mean;
+    features_s5_vert[15] = f_quarter2GradH;
+    features_s5_vert[16] = f_quarter2GradV;
+    features_s5_vert[17] = f_quarter2RatioGrad;
+    features_s5_vert[18] = f_quarter2Sum;
+    features_s5_vert[19] = f_quarter3Var;
+    features_s5_vert[20] = f_quarter3Mean;
+    features_s5_vert[21] = f_quarter3GradH;
+    features_s5_vert[22] = f_quarter3GradV;
+    features_s5_vert[23] = f_quarter3RatioGrad;
+    features_s5_vert[24] = f_quarter3Sum;
 
-    int decision =  predict_s5_VERT_SPLIT(features_s5_VERT_SPLIT);
+    int decision =  predict_s5_vert(features_s5_vert);
     fZeros();
     return decision;
   }
@@ -1173,46 +1065,37 @@ int features::predictVERTSPLIT (Partitioner* partitioner, PartSplit split)
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 8)) ||
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 32)) )
   {
-    float features_s6_VERT_SPLIT[34];
-    features_s6_VERT_SPLIT[0] = f_paramQP;
-    features_s6_VERT_SPLIT[1] = f_CU_width;
-    features_s6_VERT_SPLIT[2] = f_CU_height;
-    features_s6_VERT_SPLIT[3] = f_topLeft_x;
-    features_s6_VERT_SPLIT[4] = f_topLeft_y;
-    features_s6_VERT_SPLIT[5] = f_bottomRight_x;
-    features_s6_VERT_SPLIT[6] = f_bottomRight_y;
-    features_s6_VERT_SPLIT[7] = f_POC;
-    features_s6_VERT_SPLIT[8] = f_qtdepth;
-    features_s6_VERT_SPLIT[9] = f_mtdepth;
-    features_s6_VERT_SPLIT[10] = f_variance;
-    features_s6_VERT_SPLIT[11] = f_mean;
-    features_s6_VERT_SPLIT[12] = f_gradientH;
-    features_s6_VERT_SPLIT[13] = f_gradientV;
-    features_s6_VERT_SPLIT[14] = f_ratioGrad;
-    features_s6_VERT_SPLIT[15] = f_sum;
-    features_s6_VERT_SPLIT[16] = f_quarter1Var;
-    features_s6_VERT_SPLIT[17] = f_quarter1Mean;
-    features_s6_VERT_SPLIT[18] = f_quarter1GradH;
-    features_s6_VERT_SPLIT[19] = f_quarter1GradV;
-    features_s6_VERT_SPLIT[20] = f_quarter1RatioGrad;
-    features_s6_VERT_SPLIT[21] = f_quarter1Sum;
-    features_s6_VERT_SPLIT[22] = f_quarter2Var;
-    features_s6_VERT_SPLIT[23] = f_quarter2Mean;
-    features_s6_VERT_SPLIT[24] = f_quarter2GradH;
-    features_s6_VERT_SPLIT[25] = f_quarter2GradV;
-    features_s6_VERT_SPLIT[26] = f_quarter2RatioGrad;
-    features_s6_VERT_SPLIT[27] = f_quarter2Sum;
-    features_s6_VERT_SPLIT[28] = f_quarter3Var;
-    features_s6_VERT_SPLIT[29] = f_quarter3Mean;
-    features_s6_VERT_SPLIT[30] = f_quarter3GradH;
-    features_s6_VERT_SPLIT[31] = f_quarter3GradV;
-    features_s6_VERT_SPLIT[32] = f_quarter3RatioGrad;
-    features_s6_VERT_SPLIT[33] = f_quarter3Sum;
+    float features_s6_vert[25];
+    features_s6_vert[0] = f_paramQP;
+    features_s6_vert[1] = f_variance;
+    features_s6_vert[2] = f_mean;
+    features_s6_vert[3] = f_gradientH;
+    features_s6_vert[4] = f_gradientV;
+    features_s6_vert[5] = f_ratioGrad;
+    features_s6_vert[6] = f_sum;
+    features_s6_vert[7] = f_quarter1Var;
+    features_s6_vert[8] = f_quarter1Mean;
+    features_s6_vert[9] = f_quarter1GradH;
+    features_s6_vert[10] = f_quarter1GradV;
+    features_s6_vert[11] = f_quarter1RatioGrad;
+    features_s6_vert[12] = f_quarter1Sum;
+    features_s6_vert[13] = f_quarter2Var;
+    features_s6_vert[14] = f_quarter2Mean;
+    features_s6_vert[15] = f_quarter2GradH;
+    features_s6_vert[16] = f_quarter2GradV;
+    features_s6_vert[17] = f_quarter2RatioGrad;
+    features_s6_vert[18] = f_quarter2Sum;
+    features_s6_vert[19] = f_quarter3Var;
+    features_s6_vert[20] = f_quarter3Mean;
+    features_s6_vert[21] = f_quarter3GradH;
+    features_s6_vert[22] = f_quarter3GradV;
+    features_s6_vert[23] = f_quarter3RatioGrad;
+    features_s6_vert[24] = f_quarter3Sum;
 
-    int decision =  predict_s6_VERT_SPLIT(features_s6_VERT_SPLIT);
+    int decision =  predict_s6_vert(features_s6_vert);
     fZeros();
     return decision;
-  } */
+  } 
   else
   {
     return 1;

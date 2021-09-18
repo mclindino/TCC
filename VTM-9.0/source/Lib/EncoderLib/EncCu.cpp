@@ -1229,7 +1229,6 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
      if ((partitioner.chType == CHANNEL_TYPE_LUMA) && (tempCS->picture->getPOC() > 0)) features::extractCUPixel(tempCS, split, &partitioner);
   #endif
 
-  //Lindino
   #if DATASET_PIXEL
     clock_t Ticks[2];
     Ticks[0] = clock();

@@ -8,37 +8,33 @@
 #include <string.h>
 
 //Modelos
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_QT_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_VERT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_horz.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_vert.h"
 
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s1_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s1_VERT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s1_horz.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s1_vert.h"
 
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_QT_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_VERT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_horz.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_vert.h"
 
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s3_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s3_VERT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s3_horz.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s3_vert.h"
 
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_QT_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_VERT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_horz.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_vert.h"
 
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s5_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s5_VERT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s5_horz.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s5_vert.h"
 
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_QT_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_HORZ_SPLIT.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_VERT_SPLIT.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_horz.h"
+#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_vert.h"
 
 
 using namespace std;
 
 #define DATASET_EXTRACTION_FEATURES 0
 #define DATASET_EXTRACTION_TARGET 0
-#define DATASET_PIXEL 1
+#define DATASET_PIXEL 0
 
 enum DepthCTUFrame
 {
