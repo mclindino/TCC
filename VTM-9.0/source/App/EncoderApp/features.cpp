@@ -151,7 +151,7 @@ void features::createFile()
   check_file << "paramQP,topLeft_x,topLeft_y,bottomRight_x,bottomRight_y,POC,qtdepth,mtdepth,"
                 << "variance,mean,gradientH,gradientV,ratioGrad,sum,quarter1Var,quarter1Mean,quarter1GradH,quarter1GradV,quarter1RatioGrad,quarter1Sum,"
                 << "quarter2Var,quarter2Mean,quarter2GradH,quarter2GradV,quarter2RatioGrad,quarter2Sum,"
-                << "quarter3Var,quarter3Mean,quarter3GradH,quarter3GradV,quarter3RatioGrad,quarter3Sum,splitType,direction,decision" << endl;
+                << "quarter3Var,quarter3Mean,quarter3GradH,quarter3GradV,quarter3RatioGrad,quarter3Sum,direction,decision" << endl;
 }
 
 
@@ -682,7 +682,7 @@ int features::predictHORZSPLIT (Partitioner* partitioner)
     fZeros();
     return decision;
   }
-  else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 64)) ||
+  else */if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 64)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 32)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 128)) )
   {
@@ -721,18 +721,17 @@ int features::predictHORZSPLIT (Partitioner* partitioner)
     features_s2_HORZ_SPLIT[31] = f_quarter3Sum;
 
     int decision = predict_s2_HORZ_SPLIT(features_s2_HORZ_SPLIT);
-    
+
     for(int i = 0; i < 32; i++)
     {
       check_file << features_s2_HORZ_SPLIT[i] << ",";
     }
     check_file << "HORZ," << decision << endl;
-    
     fZeros();
     return decision;
   }
 
-  else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 32)) ||
+ /*else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 32)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 64)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 16)) ||
           ((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 128))) 
@@ -822,7 +821,7 @@ int features::predictHORZSPLIT (Partitioner* partitioner)
     return decision;
   }
 
-  else */if(((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 16)) ||
+  else if(((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 16)) ||
           ((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 32)) ||
           ((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 8)) ||
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 64)) )
@@ -867,7 +866,7 @@ int features::predictHORZSPLIT (Partitioner* partitioner)
     return decision;
   }
 
-  /*else if(((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 16)) ||
+  else if(((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 16)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 8)) ||
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 32)) )
   {
@@ -982,7 +981,7 @@ int features::predictVERTSPLIT (Partitioner* partitioner, PartSplit split)
     fZeros();
     return decision;
   }
-  else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 64)) ||
+  else */ if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 64)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 128)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 32))  )
   {
@@ -1022,20 +1021,18 @@ int features::predictVERTSPLIT (Partitioner* partitioner, PartSplit split)
     features_s2_VERT_SPLIT[31] = f_quarter3Sum;
 
     int decision = predict_s2_VERT_SPLIT(features_s2_VERT_SPLIT);
-
+    
     for(int i = 0; i < 32; i++)
     {
       check_file << features_s2_VERT_SPLIT[i] << ",";
     }
-
-    check_file << split << ",VERT," << decision << endl;
+    check_file << "VERT," << decision << endl;
     fZeros();
     
     return decision;
 
   }
-
-  else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 32)) ||
+/*else if(((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 32)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 64)) ||
           ((partitioner->currArea().lheight() == 128) && (partitioner->currArea().lwidth() == 16)) ||
           ((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 128))  )
@@ -1126,7 +1123,7 @@ int features::predictVERTSPLIT (Partitioner* partitioner, PartSplit split)
     return decision;
   }
 
-  else*/ if(((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 16)) ||
+  else if(((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 16)) ||
           ((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 32)) ||
           ((partitioner->currArea().lheight() == 64) && (partitioner->currArea().lwidth() == 8)) ||
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 64)) )
@@ -1172,7 +1169,7 @@ int features::predictVERTSPLIT (Partitioner* partitioner, PartSplit split)
     return decision;
   }
 
-  /*else if(((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 16)) ||
+  else if(((partitioner->currArea().lheight() == 16) && (partitioner->currArea().lwidth() == 16)) ||
           ((partitioner->currArea().lheight() == 32) && (partitioner->currArea().lwidth() == 8)) ||
           ((partitioner->currArea().lheight() == 8) && (partitioner->currArea().lwidth() == 32)) )
   {
