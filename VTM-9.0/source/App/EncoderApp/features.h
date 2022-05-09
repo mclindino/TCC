@@ -7,34 +7,11 @@
 #include <algorithm>
 #include <string.h>
 
-//Modelos
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_horz.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s0_vert.h"
-
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s1_horz.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s1_vert.h"
-
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_horz.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s2_vert.h"
-
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s3_horz.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s3_vert.h"
-
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_horz.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s4_vert.h"
-
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s5_horz.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s5_vert.h"
-
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_horz.h"
-#include "/home/lindino/Documentos/TCC/git/VTM-9.0/source/Lib/EncoderLib/s6_vert.h"
-
-
 using namespace std;
 
-#define DATASET_EXTRACTION_FEATURES 0
-#define DATASET_EXTRACTION_TARGET 0
-#define DATASET_PIXEL 0
+#define DATASET_EXTRACTION_FEATURES 1
+#define DATASET_EXTRACTION_TARGET 1
+#define DATASET_EXTRACTION_PIXEL 1
 
 enum DepthCTUFrame
 {
@@ -167,9 +144,5 @@ public:
     static double  variance                         (int xTL, int yTL, int xBR, int yBR, int varSum);
     static vector<unsigned short>  gradients        (int xTL, int yTL, int xBR, int yBR);
     static vector<double>  quarterCU                (int xTL, int yTL, int xBR, int yBR, PartSplit split);
-    //static int predictQUADSPLIT                     (Partitioner* partitioner);
-    static int predictHORZSPLIT                     (Partitioner* partitioner);
-    static int predictVERTSPLIT                     (Partitioner* partitioner, PartSplit split);
-    static float* selectFeatures                    (int type);
     static void fZeros                              ();
 };

@@ -1226,37 +1226,15 @@ void EncCu::xCheckModeSplit(CodingStructure *&tempCS, CodingStructure *&bestCS, 
   
   /*lindino*/
   #if DATASET_EXTRACTION_FEATURES
-     if ((partitioner.chType == CHANNEL_TYPE_LUMA) && (tempCS->picture->getPOC() > 0)) features::extractCUPixel(tempCS, split, &partitioner);
+    for(int i = 0; i < tempCS->cus.size(); i++)
+    {
+      if ((partitioner.chType == CHANNEL_TYPE_LUMA) && (tempCS->picture->getPOC() > 0)) features::extractFeatures(tempCS.cus[i], tempCS, &encTestMode);
+    }
   #endif
 
-  #if DATASET_PIXEL
-    clock_t Ticks[2];
-    Ticks[0] = clock();
-    int rf_control = 1;
-    
-    if((partitioner.chType == CHANNEL_TYPE_LUMA) && (bestCS->picture->getPOC() > 0))
-    { 
-      features::extractCUPixel(bestCS, split, &partitioner);
-      /*if (split == CU_QUAD_SPLIT)
-      {
-        rf_control = features::predictQUADSPLIT(bestCS);
-      }
-      else*/
-      if ((split == CU_HORZ_SPLIT) || (split == CU_TRIH_SPLIT))
-      {
-        rf_control = features::predictHORZSPLIT(&partitioner);
-      }
-      
-      else if ((split == CU_VERT_SPLIT) || (split == CU_TRIV_SPLIT))
-      {
-        rf_control = features::predictVERTSPLIT(&partitioner, split);
-      }
-    }
-    
-    Ticks[1] = clock(); 
-    extractionFeaturesTime += (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
-    
-    if(!rf_control) return;
+  /*lindino*/
+  #if DATASET_EXTRACTION_PIXEL
+     if ((partitioner.chType == CHANNEL_TYPE_LUMA) && (tempCS->picture->getPOC() > 0)) features::extractCUPixel(tempCS, split, &partitioner);
   #endif
 
   const ModeType modeTypeChild = partitioner.modeType;

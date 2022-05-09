@@ -1719,11 +1719,11 @@ void EncSlice::encodeCtus( Picture* pcPic, const bool bCompressEntireSlice, cons
   #if DATASET_EXTRACTION_TARGET
   for(int i = 0; i < cs.cus.size(); i++)
   {
-    if (cs.cus[i]->chType == CHANNEL_TYPE_LUMA) features::extractTarget(&cs, cs.cus[i]);//, encTestMode)
+    if (cs.cus[i]->chType == CHANNEL_TYPE_LUMA) features::extractTarget(&cs, cs.cus[i]);
   }
   #endif
   
-    //features::ctuDepth(&cs);
+    features::ctuDepth(&cs);
     
     pCABACWriter->resetBits();
     pCABACWriter->coding_tree_unit( cs, ctuArea, prevQP, ctuRsAddr, true, true );
